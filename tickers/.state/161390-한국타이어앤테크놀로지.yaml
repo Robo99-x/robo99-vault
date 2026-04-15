@@ -1,0 +1,15 @@
+ticker: '161390'
+name: 한국타이어앤테크놀로지
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 타이어
+- 밸류업
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

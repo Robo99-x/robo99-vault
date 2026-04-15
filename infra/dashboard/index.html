@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robo99 HQ Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --blue: #58a6ff;
+    --purple: #bc8cff;
+    --orange: #ffa657;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Mono', 'Consolas', monospace; font-size: 13px; }
+
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--blue); }
+  .badge { background: var(--bg3); border: 1px solid var(--border); padding: 2px 8px; border-radius: 12px; font-size: 11px; color: var(--text2); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 4px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .timestamp { color: var(--text2); font-size: 11px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.2fr;
+    gap: 1px;
+    background: var(--border);
+    height: calc(100vh - 51px);
+  }
+
+  .panel {
+    background: var(--bg);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-content { padding: 12px 16px; flex: 1; }
+
+  /* CIO Score */
+  .score-big {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 8px 0 4px;
+  }
+  .score-num { font-size: 42px; font-weight: 700; line-height: 1; }
+  .score-denom { font-size: 18px; color: var(--text2); }
+  .score-bar-wrap { background: var(--bg3); border-radius: 4px; height: 6px; margin: 8px 0; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 4px; transition: width 0.5s; }
+
+  /* CIO Cards */
+  .cio-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .cio-card:hover { border-color: var(--blue); }
+  .cio-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .ticker-name { font-size: 14px; font-weight: 700; }
+  .ticker-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .score-pill {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .score-high { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .score-mid { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid rgba(210,153,34,0.3); }
+  .score-low { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .cio-conclusion { font-size: 11px; color: var(--text2); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; }
+  .agent-row { display: flex; gap: 8px; margin-bottom: 6px; }
+  .agent-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .agent-score { font-weight: 700; }
+
+  /* Stage2 Signals */
+  .signal-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .signal-item:hover { border-color: var(--orange); }
+  .signal-left { flex: 1; }
+  .signal-name { font-size: 13px; font-weight: 600; }
+  .signal-code { font-size: 10px; color: var(--text2); }
+  .signal-meta { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .tag-s2 { color: var(--orange); border-color: rgba(255,166,87,0.3); background: rgba(255,166,87,0.08); }
+  .tag-s1 { color: var(--blue); border-color: rgba(88,166,255,0.3); background: rgba(88,166,255,0.08); }
+  .signal-right { text-align: right; min-width: 80px; }
+  .price { font-size: 13px; font-weight: 700; }
+  .change-pos { color: var(--green); font-size: 12px; }
+  .change-neg { color: var(--red); font-size: 12px; }
+  .rs-badge { font-size: 10px; color: var(--purple); margin-top: 2px; }
+
+  /* System panel */
+  .sys-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .sys-row:last-child { border-bottom: none; }
+  .sys-label { color: var(--text2); font-size: 12px; }
+  .sys-val { font-size: 12px; font-weight: 600; }
+  .ok { color: var(--green); }
+  .warn { color: var(--yellow); }
+  .err { color: var(--red); }
+
+  .section-title {
+    font-size: 10px;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 14px 0 8px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .mini-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .mini-label { font-size: 10px; color: var(--text2); margin-bottom: 4px; }
+  .mini-val { font-size: 16px; font-weight: 700; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">robo99 HQ</div>
+    <div class="badge"><span class="status-dot"></span>LIVE</div>
+    <div class="badge">2-Layer Agent System</div>
+  </div>
+  <div class="timestamp">📅 2026-04-01 &nbsp;|&nbsp; Commander → Investment HQ</div>
+</div>
+
+<div class="grid">
+
+  <!-- 좌측: CIO 브리핑 -->
+  <div class="panel">
+    <div class="panel-header">🏦 Investment HQ — CIO 브리핑</div>
+    <div class="panel-content">
+
+      <div class="section-title">최근 분석 (reviews/)</div>
+
+      <!-- AT&T -->
+      <div class="cio-card">
+        <div class="cio-card-top">
+          <div>
+            <div class="ticker-name">AT&T (T)</div>
+            <div class="ticker-sub">2026-04-01 · FirstNet $20B 투자 약속</div>
+          </div>
+          <div class="score-pill score-low">4.4 / 10</div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-chip">🗣️ 옵티머스 <span class="agent-score" style="color:var(--yellow)">Conv 4</span></div>
+          <div class="agent-chip">🔬 Geek <span class="agent-score" style="color:var(--yellow)">Risk 5</span></div>
+          <div class="agent-chip" style="color:var(--text2)">비중 ≤ 8%</div>
+        </div>
+        <div class="cio-conclusion">
+          배당 안정형 포트폴리오 편입 기준 무난. 공격적 모멘텀 베팅 대상 아님. 신규 진입 명분 약함. 금리 방향 확인 필수.
+        </div>
+      </div>
+
+      <!-- 삼천당제약 -->
+      <div class="cio-card">
+        <div class="cio-card-top">
+          <div>
+            <div class="ticker-name">삼천당제약 (000250)</div>
+            <div class="ticker-sub">2026-03-30 · 경구 GLP-1 제네릭 미국 라이센스</div>
+          </div>
+          <div class="score-pill score-mid">5.4 / 10</div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-chip">🗣️ 옵티머스 <span class="agent-score" style="color:var(--green)">Conv 7</span></div>
+          <div class="agent-chip">🔬 Geek <span class="agent-score" style="color:var(--yellow)">Risk 6</span></div>
+          <div class="agent-chip" style="color:var(--text2)">비중 ≤ 10%</div>
+        </div>
+        <div class="cio-conclusion">
+          파이프라인 가치 인정 · 시총 27.7조 이미 고평가. 단기 갭업 후 흐름 관찰 권고. FDA 허가 신청 공시 시 재평가.
+        </div>
+      </div>
+
+      <!-- 리가켐바이오 -->
+      <div class="cio-card">
+        <div class="cio-card-top">
+          <div>
+            <div class="ticker-name">리가켐바이오</div>
+            <div class="ticker-sub">2026-03-26 · 옵티머스 + Geek 분석</div>
+          </div>
+          <div class="score-pill score-mid">— / 10</div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-chip">🗣️ 옵티머스</div>
+          <div class="agent-chip">🔬 Geek</div>
+        </div>
+        <div class="cio-conclusion">CIO 최종 결론 미작성 · 원본 파일 확인 필요</div>
+      </div>
+
+      <div class="section-title">CIO Score 공식</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.8;color:var(--text2)">
+        Score = 옵티머스×0.6 + Geek×0.4<br>
+        비중 = Score × 2% &nbsp;(최대 20%)<br>
+        <span style="color:var(--yellow)">⚡ 투자 트리거 ≥ 6 → CIO 모드 활성화</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 중앙: Stage2 신호 -->
+  <div class="panel">
+    <div class="panel-header">📡 Stage2 신호 — 04/01 오전</div>
+    <div class="panel-content">
+
+      <div class="section-title">S2 돌파 (55일 고점)</div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">아주IB투자</div>
+          <div class="signal-code">027360</div>
+          <div class="signal-meta">
+            <span class="tag tag-s2">S2·55일</span>
+            <span class="tag">거래량 0.2x</span>
+            <span class="rs-badge">RS 98%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">9,260</div>
+          <div class="change-pos">+14.04%</div>
+        </div>
+      </div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">ISC</div>
+          <div class="signal-code">095340</div>
+          <div class="signal-meta">
+            <span class="tag tag-s2">S2·55일</span>
+            <span class="tag">거래량 0.2x</span>
+            <span class="rs-badge">RS 97%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">265,000</div>
+          <div class="change-pos">+13.73%</div>
+        </div>
+      </div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">기가비스</div>
+          <div class="signal-code">420770</div>
+          <div class="signal-meta">
+            <span class="tag tag-s2">S2·55일</span>
+            <span class="tag">거래량 0.6x</span>
+            <span class="rs-badge">RS 95%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">83,700</div>
+          <div class="change-pos">+15.13%</div>
+        </div>
+      </div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">LG이노텍</div>
+          <div class="signal-code">011070</div>
+          <div class="signal-meta">
+            <span class="tag tag-s1">S1·20일</span>
+            <span class="tag">거래량 0.6x</span>
+            <span class="rs-badge">RS 73%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">339,000</div>
+          <div class="change-pos">+15.50%</div>
+        </div>
+      </div>
+
+      <div class="section-title">S1 돌파 (20일 고점)</div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">피에스케이</div>
+          <div class="signal-code">319660</div>
+          <div class="signal-meta">
+            <span class="tag tag-s2">S2·55일</span>
+            <span class="tag">거래량 0.1x</span>
+            <span class="rs-badge">RS 95%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">86,900</div>
+          <div class="change-pos">+9.31%</div>
+        </div>
+      </div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">삼성SDI</div>
+          <div class="signal-code">006400</div>
+          <div class="signal-meta">
+            <span class="tag tag-s1">S1·20일</span>
+            <span class="tag">거래량 0.2x</span>
+            <span class="rs-badge">RS 84%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">415,500</div>
+          <div class="change-pos">+1.84%</div>
+        </div>
+      </div>
+
+      <div class="signal-item">
+        <div class="signal-left">
+          <div class="signal-name">HD건설기계</div>
+          <div class="signal-code">267270</div>
+          <div class="signal-meta">
+            <span class="tag tag-s1">S1·20일</span>
+            <span class="tag">거래량 0.4x</span>
+            <span class="rs-badge">RS 71%</span>
+          </div>
+        </div>
+        <div class="signal-right">
+          <div class="price">138,900</div>
+          <div class="change-pos">+11.03%</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:11px;color:var(--text2)">
+        💡 <span style="color:var(--text)">전략:</span> 돌파 확인 후 분할 접근. 리스크 태그 주의/제외 → 후순위 처리
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 우측: 시스템 상태 + 에이전트 구조 -->
+  <div class="panel">
+    <div class="panel-header">🔧 시스템 상태</div>
+    <div class="panel-content">
+
+      <div class="section-title">Agent Layer Status</div>
+      <div class="sys-row">
+        <div class="sys-label">Commander</div>
+        <div class="sys-val ok">● 활성</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">Telegram MCP</div>
+        <div class="sys-val ok">● 연결됨</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">Investment HQ</div>
+        <div class="sys-val" style="color:var(--text2)">○ 대기 중</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">Stage2 Scanner</div>
+        <div class="sys-val ok">● 오늘 실행</div>
+      </div>
+
+      <div class="section-title">Commander Staff</div>
+      <div class="sys-row">
+        <div class="sys-label">🏗️ 설계자 (Architect)</div>
+        <div class="sys-val" style="color:var(--text2)">대기</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">⚙️ 개발자 (Developer)</div>
+        <div class="sys-val" style="color:var(--text2)">대기</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">✅ 검증자 (Validator)</div>
+        <div class="sys-val" style="color:var(--text2)">대기</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">🚀 운영 설계자</div>
+        <div class="sys-val" style="color:var(--text2)">대기</div>
+      </div>
+      <div class="sys-row">
+        <div class="sys-label">📊 대시보드</div>
+        <div class="sys-val ok">● 실행 중</div>
+      </div>
+
+      <div class="section-title">오늘의 데이터</div>
+      <div class="two-col">
+        <div class="mini-card">
+          <div class="mini-label">Stage2 신호</div>
+          <div class="mini-val" style="color:var(--orange)">10개</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">CIO 분석</div>
+          <div class="mini-val" style="color:var(--blue)">3건</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">시장 스냅샷</div>
+          <div class="mini-val" style="color:var(--yellow)">⚠️ 부분</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-label">RS 랭킹</div>
+          <div class="mini-val" style="color:var(--green)">갱신됨</div>
+        </div>
+      </div>
+
+      <div class="section-title">2계층 구조</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:11px;line-height:2;color:var(--text2);font-family:monospace">
+        <span style="color:var(--blue)">Commander</span> (1계층 · 총괄)<br>
+        &nbsp;├─ architect / developer<br>
+        &nbsp;├─ validator / ops-designer<br>
+        &nbsp;└─ <span style="color:var(--orange)">dashboard</span> ← 현재<br>
+        <br>
+        <span style="color:var(--purple)">Investment HQ</span> (2계층 · 투자)<br>
+        &nbsp;├─ CIO (스코어 ≥ 6 활성화)<br>
+        &nbsp;├─ 옵티머스 (드러켄밀러)<br>
+        &nbsp;├─ Geek (퀀트/리스크)<br>
+        &nbsp;└─ 오라클 (워렌 버핏)
+      </div>
+
+      <div class="section-title">마지막 업데이트</div>
+      <div style="color:var(--text2);font-size:11px;line-height:1.8">
+        Stage2 브리핑: 2026-04-01 오전<br>
+        CIO 리뷰 (AT&amp;T): 2026-04-01<br>
+        시장 스냅샷: 2026-04-01 07:02<br>
+        <span style="color:var(--text2)">RS 랭킹: 2026-04-01</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

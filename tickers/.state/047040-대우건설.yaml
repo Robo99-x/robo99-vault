@@ -1,0 +1,16 @@
+ticker: '047040'
+name: 대우건설
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 건설 대표주
+- 수자원
+- 질적 개선)
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

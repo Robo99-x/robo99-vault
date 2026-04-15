@@ -1,0 +1,16 @@
+ticker: '001740'
+name: SK네트웍스
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 마켓컬리
+- 호텔
+- 리조트
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

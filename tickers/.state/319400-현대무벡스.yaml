@@ -1,0 +1,16 @@
+ticker: '319400'
+name: 현대무벡스
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 로봇
+- 협동로봇 등)
+- SI
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

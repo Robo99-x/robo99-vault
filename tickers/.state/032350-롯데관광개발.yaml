@@ -1,0 +1,16 @@
+ticker: '032350'
+name: 롯데관광개발
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 호텔
+- 리조트
+- 여행
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

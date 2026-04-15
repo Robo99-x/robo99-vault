@@ -1,0 +1,17 @@
+{
+  "date": "2026-04-10",
+  "ticker_state_count": 56,
+  "event_state_count": 13,
+  "theme_state_count": 6,
+  "quarantine_count": 0,
+  "stale_entities_count": 0,
+  "wikilink_coverage_ratio": 1.0,
+  "last_briefing_similarity": 0.088,
+  "last_syncer_report": {
+    "path": "entity_syncer_report_2026-04-10.md",
+    "updated_entities": 29,
+    "new_entities": 0,
+    "event_transitions": 0
+  },
+  "last_event_log_ts": "2026-04-10T12:42:30.626389"
+}

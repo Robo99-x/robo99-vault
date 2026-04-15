@@ -1,0 +1,30 @@
+# ── macOS ──────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+
+# ── Python ──────────────────────────────────────────
+*.pyc
+*.pyo
+__pycache__/
+.venv/
+*.egg-info/
+
+# ── 환경/시크릿 ──────────────────────────────────────
+.env
+secrets/
+
+# ── 대용량 바이너리 ──────────────────────────────────
+*.pdf
+pdfs/
+alerts/cache/krx_cache.sqlite
+
+# ── 자동생성 로그 (머신 사이드) ──────────────────────
+alerts/*.log
+alerts/*.err
+alerts/stage2_archive/
+alerts/weekly_upgrade.log
+
+# ── 임시 파일 ────────────────────────────────────────
+*.tmp
+*.lock

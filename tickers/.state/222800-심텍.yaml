@@ -1,0 +1,15 @@
+ticker: '222800'
+name: 심텍
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 소캠
+- 밸류업
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

@@ -1,0 +1,31 @@
+{
+  "checked": "2026-04-08T23:00:00.386802",
+  "missing_count": 5,
+  "missing": [
+    {
+      "file": "2026-03-19_CMTX_IR_Meeting_Part2.md",
+      "date": "2026-03-19",
+      "path": "events/2026-03-19_CMTX_IR_Meeting_Part2.md"
+    },
+    {
+      "file": "2026-03-27_FCC_구리통신망_광섬유교체_규제폐지.md",
+      "date": "2026-03-27",
+      "path": "events/2026-03-27_FCC_구리통신망_광섬유교체_규제폐지.md"
+    },
+    {
+      "file": "2026-03-30_삼천당제약_세마글루타이드_미국라이센스.md",
+      "date": "2026-03-30",
+      "path": "events/2026-03-30_삼천당제약_세마글루타이드_미국라이센스.md"
+    },
+    {
+      "file": "2026-04-01_AT&T_FirstNet_20억달러투자.md",
+      "date": "2026-04-01",
+      "path": "events/2026-04-01_AT&T_FirstNet_20억달러투자.md"
+    },
+    {
+      "file": "2026-04-06_India_Railway_Signal_Comm_Infra.md",
+      "date": "2026-04-06",
+      "path": "events/2026-04-06_India_Railway_Signal_Comm_Infra.md"
+    }
+  ]
+}

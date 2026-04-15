@@ -1,0 +1,16 @@
+ticker: 028050
+name: 삼성E&A
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 수자원
+- 질적 개선)
+- 밸류업
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

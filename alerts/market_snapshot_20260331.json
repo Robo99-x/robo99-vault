@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-03-31T07:02:00.786037",
+  "date": "2026-03-31",
+  "indices": {
+    "S&P 500": {
+      "symbol": "^GSPC",
+      "price": 0
+    },
+    "나스닥": {
+      "symbol": "^IXIC",
+      "price": 0
+    },
+    "다우": {
+      "symbol": "^DJI",
+      "price": 0
+    },
+    "VIX": {
+      "symbol": "^VIX",
+      "price": 0
+    }
+  },
+  "macro": {
+    "10Y": {
+      "symbol": "^TNX",
+      "price": 0
+    },
+    "DXY": {
+      "symbol": "DX-Y.NYB",
+      "price": 0
+    },
+    "WTI": {
+      "symbol": "CL=F",
+      "price": 0
+    },
+    "USD/KRW": {
+      "symbol": "KRW=X",
+      "price": 0
+    },
+    "USD/JPY": {
+      "symbol": "JPY=X",
+      "price": 0
+    },
+    "금": {
+      "symbol": "GC=F",
+      "price": 0
+    }
+  },
+  "sectors": {
+    "XLK": {
+      "symbol": "XLK",
+      "price": 0
+    },
+    "XLF": {
+      "symbol": "XLF",
+      "price": 0
+    },
+    "XLE": {
+      "symbol": "XLE",
+      "price": 0
+    },
+    "XLV": {
+      "symbol": "XLV",
+      "price": 0
+    },
+    "XLI": {
+      "symbol": "XLI",
+      "price": 0
+    },
+    "XLRE": {
+      "symbol": "XLRE",
+      "price": 0
+    },
+    "XLP": {
+      "symbol": "XLP",
+      "price": 0
+    },
+    "XLC": {
+      "symbol": "XLC",
+      "price": 0
+    }
+  },
+  "watchlist": {
+    "NVDA": {
+      "symbol": "NVDA",
+      "price": 0
+    },
+    "AAPL": {
+      "symbol": "AAPL",
+      "price": 0
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "price": 0
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "price": 0
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "price": 0
+    },
+    "META": {
+      "symbol": "META",
+      "price": 0
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "price": 0
+    },
+    "TSM": {
+      "symbol": "TSM",
+      "price": 0
+    },
+    "AVGO": {
+      "symbol": "AVGO",
+      "price": 0
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "price": 0
+    }
+  },
+  "earnings": []
+}

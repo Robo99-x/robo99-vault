@@ -1,0 +1,14 @@
+ticker: 028300
+name: HLB
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 면역항암제
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

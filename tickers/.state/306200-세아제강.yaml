@@ -1,0 +1,19 @@
+ticker: '306200'
+name: 세아제강
+status: monitoring
+status_since: '2026-04-09'
+thesis: ''
+themes:
+- 철강 주요종목
+- 강관업체
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-09'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-09.md
+- date: '2026-04-09'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-09'
+last_briefed: '2026-04-09'

@@ -1,0 +1,15 @@
+ticker: 000990
+name: DB하이텍
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 반도체 대표주
+- 스마트카
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

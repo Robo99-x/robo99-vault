@@ -1,0 +1,16 @@
+ticker: 002380
+name: KCC
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 밸류업
+- 리모델링
+- 인테리어
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

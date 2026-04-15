@@ -1,0 +1,16 @@
+ticker: '300720'
+name: 한일시멘트
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 시멘트
+- 레미콘
+- 밸류업
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

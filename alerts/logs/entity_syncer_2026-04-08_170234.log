@@ -1,0 +1,11 @@
+[2026년  4월  8일 수요일 17시 02분 34초 KST] entity_syncer 시작 ()
+entity_syncer 시작 — 2026-04-08
+------------------------------------------------------------
+(a) theme_briefing / screener → tickers/.state
+(b) reviews → tickers/.state
+(c) events phase 전이
+(d) themes/active → themes/active/.state
+------------------------------------------------------------
+리포트: alerts/entity_syncer_report_2026-04-08.md
+ticker 33 / 신규 33 / event 전이 0 / theme 6
+[2026년  4월  8일 수요일 17시 02분 35초 KST] 종료 code=0

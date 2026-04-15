@@ -1,0 +1,16 @@
+ticker: '010170'
+name: 대한광통신
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 5G
+- 광통신
+- 광섬유 등)
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

@@ -1,0 +1,24 @@
+[project]
+name = "market-monitor"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pykrx @ git+https://github.com/seohyunjun/pykrx.git@feat/krx-login-session",
+    "akshare>=1.14.0",
+    "yfinance>=0.2.40",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "feedparser>=6.0.0",
+    "apscheduler>=3.10.0",
+    "youtube-transcript-api>=1.2.4",
+    "lxml>=6.0.2",
+    "finance-datareader>=0.9.102",
+    "scipy>=1.17.1",
+    "streamlit>=1.55.0",
+    "plotly>=6.5.2",
+    "opendartreader>=0.2.3",
+    "pdfplumber>=0.11.9",
+    "playwright>=1.58.0",
+    "streamlit-aggrid>=1.2.1.post2",
+    "pyyaml>=6.0",
+]

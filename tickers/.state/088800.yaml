@@ -1,0 +1,14 @@
+ticker: ''
+name: 088800
+status: monitoring
+status_since: '2026-04-06'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-06'
+  kind: cio_review
+  ref: reviews/2026-04-06_088800_CIO.md
+last_seen: '2026-04-06'
+next_review: '2026-04-13'

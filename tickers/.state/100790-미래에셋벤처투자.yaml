@@ -1,0 +1,15 @@
+ticker: '100790'
+name: 미래에셋벤처투자
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes:
+- 창투사
+- 마켓컬리
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-08'

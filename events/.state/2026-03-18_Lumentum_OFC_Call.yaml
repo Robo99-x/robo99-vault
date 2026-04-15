@@ -1,0 +1,10 @@
+event_id: 2026-03-18_Lumentum_OFC_Call
+event_date: 2026-03-18
+phase: active
+last_reviewed: '2026-04-10'
+expires_on: '2026-09-14'
+linked_tickers_seen:
+- ticker: LITE
+  last_seen: ''
+- ticker: NVDA
+  last_seen: ''

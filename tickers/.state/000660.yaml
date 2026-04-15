@@ -1,0 +1,14 @@
+ticker: ''
+name: '000660'
+status: monitoring
+status_since: '2026-04-08'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-08'
+  kind: cio_review
+  ref: reviews/2026-04-08_005930_000660_CIO.md
+last_seen: '2026-04-08'
+next_review: '2026-04-15'

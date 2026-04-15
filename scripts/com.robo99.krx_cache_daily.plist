@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.robo99.krx_cache_daily</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/robo99/robo99_hq/scripts/.venv/bin/python</string>
+    <string>/Users/robo99/robo99_hq/scripts/cache_krx_daily.py</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>16</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/robo99/robo99_hq/alerts/krx_cache_daily.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/robo99/robo99_hq/alerts/krx_cache_daily.err</string>
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>
