@@ -1,0 +1,14 @@
+ticker: ''
+name: 대한해운
+status: monitoring
+status_since: '2026-04-16'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-16'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-16.md
+last_seen: '2026-04-16'
+last_briefed: '2026-04-16'

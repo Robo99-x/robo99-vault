@@ -5,6 +5,7 @@ hq_dashboard.py — 로보99 HQ 대시보드 (새버전)
 """
 import json
 import re
+import sqlite3
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -179,6 +180,22 @@ hr { border-color: #30363d !important; margin: 12px 0 !important; }
 .event-active { border-left: 3px solid #f85149; padding: 8px 12px; background: #161b22; border-radius: 6px; margin: 5px 0; }
 .event-monitor { border-left: 3px solid #d29922; padding: 8px 12px; background: #161b22; border-radius: 6px; margin: 5px 0; }
 .review-card  { border-left: 3px solid #3fb950; padding: 8px 12px; background: #161b22; border-radius: 6px; margin: 5px 0; }
+
+/* ── 특징주/대장판독기 ── */
+.theme-card { background:#161b22; border:1px solid #30363d; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
+.theme-card:hover { border-color:#58a6ff; }
+.theme-card-title { font-size:13px; font-weight:700; color:#e6edf3; }
+.theme-card-meta  { font-size:11px; color:#8b949e; margin:4px 0 6px; }
+.badge-leader { display:inline-block; background:rgba(240,136,62,0.15); border:1px solid rgba(240,136,62,0.4); color:#f0883e; font-size:11px; font-weight:600; border-radius:20px; padding:2px 10px; margin-left:6px; }
+.score-high { color:#3fb950 !important; font-weight:700; }
+.score-mid  { color:#d29922 !important; font-weight:700; }
+.score-low  { color:#8b949e !important; }
+.leader-sidebar-item { background:#161b22; border:1px solid #30363d; border-radius:6px; padding:8px 12px; margin-bottom:5px; }
+.leader-sidebar-item.active { border-color:#f0883e; background:rgba(240,136,62,0.07); }
+.daejang-banner { background:linear-gradient(135deg,rgba(240,136,62,0.15) 0%,rgba(88,166,255,0.08) 100%); border:1px solid rgba(240,136,62,0.35); border-radius:10px; padding:12px 16px; margin-bottom:10px; }
+[data-testid="stRadio"] > div { flex-direction:row !important; gap:8px; }
+[data-testid="stRadio"] label { background:#161b22 !important; border:1px solid #30363d !important; border-radius:20px !important; padding:4px 14px !important; font-size:12px !important; cursor:pointer; }
+[data-testid="stRadio"] label:has(input:checked) { border-color:#f0883e !important; color:#f0883e !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -377,111 +394,465 @@ with tab_overview:
 
 
 # ════════════════════════════════════════════════════════════════════════════
+# 특징주 헬퍼 함수
+# ════════════════════════════════════════════════════════════════════════════
+
+_THEME_NOTES_PATH = ALERTS / "theme_notes.json"
+
+
+def load_theme_notes() -> dict:
+    """alerts/theme_notes.json 로드. 없으면 빈 dict."""
+    if _THEME_NOTES_PATH.exists():
+        try:
+            return json.loads(_THEME_NOTES_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def save_theme_note(theme: str, desc: str) -> None:
+    """alerts/theme_notes.json 에 테마 설명 저장."""
+    notes = load_theme_notes()
+    notes[theme] = {"desc": desc, "updated": KST_NOW.split()[0]}
+    _THEME_NOTES_PATH.write_text(
+        json.dumps(notes, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+@st.cache_data(ttl=300)
+def fetch_ohlcv_batch(tickers: tuple) -> dict:
+    """SQLite에서 종목별 최근 26일(close>0) 배치 조회. {ticker: [today, ..., 25일전]}"""
+    if not tickers:
+        return {}
+    placeholders = ",".join("?" * len(tickers))
+    with sqlite3.connect(str(CACHE_DB)) as conn:
+        rows = conn.execute(
+            f"""
+            SELECT ticker, close FROM (
+                SELECT ticker, close,
+                    ROW_NUMBER() OVER (PARTITION BY ticker ORDER BY date DESC) AS rn
+                FROM ohlcv
+                WHERE ticker IN ({placeholders}) AND close > 0
+            ) WHERE rn <= 26
+            """,
+            list(tickers),
+        ).fetchall()
+    result: dict = {t: [] for t in tickers}
+    for ticker, close in rows:
+        result[ticker].append(close)
+    return result
+
+
+def _calc_rsi(closes: list, period: int = 14) -> float | None:
+    """closes[0]=최신. period+1 미만 시 None 반환"""
+    if len(closes) < period + 1:
+        return None
+    gains, losses = [], []
+    for i in range(period):
+        diff = closes[i] - closes[i + 1]  # closes[0]=최신이므로 역순
+        (gains if diff > 0 else losses).append(abs(diff))
+    avg_gain = sum(gains) / period if gains else 0.0
+    avg_loss = sum(losses) / period if losses else 0.0
+    if avg_loss == 0:
+        return 100.0
+    rs = avg_gain / avg_loss
+    return round(100 - (100 / (1 + rs)), 1)
+
+
+def _calc_returns(closes: list) -> dict:
+    """{'1w': float|None, '1m': float|None}  closes[0]=오늘"""
+    r1w = (closes[0] / closes[4] - 1) * 100 if len(closes) >= 5 and closes[4] else None
+    r1m = (closes[0] / closes[21] - 1) * 100 if len(closes) >= 22 and closes[21] else None
+    return {"1w": round(r1w, 1) if r1w is not None else None,
+            "1m": round(r1m, 1) if r1m is not None else None}
+
+
+def _minmax_norm(values: list, lo: float, hi: float) -> list:
+    """min-max 정규화 → [0, 100]"""
+    rng = hi - lo
+    if rng == 0:
+        return [50.0] * len(values)
+    return [max(0.0, min(100.0, (v - lo) / rng * 100)) for v in values]
+
+
+def compute_scores(stocks: list, ohlcv: dict) -> "pd.DataFrame":
+    """종합점수 계산. 전체 유니버스(40종목) 대상 min-max 정규화."""
+    rows = []
+    for s in stocks:
+        closes = ohlcv.get(s["ticker"], [])
+        ret = _calc_returns(closes)
+        rows.append({
+            **s,
+            "rsi": _calc_rsi(closes),
+            "return_1w": ret["1w"],
+            "return_1m": ret["1m"],
+        })
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+
+    rs_vals   = df["rs_proxy"].tolist()
+    chg_vals  = df["change"].tolist()
+    vol_vals  = [min(v, 15.0) for v in df["vol_ratio"].tolist()]
+    w1_vals   = [min(v, 150.0) if v is not None else 0.0 for v in df["return_1w"].tolist()]
+    m1_vals   = [min(max(v, -20.0), 150.0) if v is not None else None for v in df["return_1m"].tolist()]
+
+    rs_n  = _minmax_norm(rs_vals,  min(rs_vals),  max(rs_vals))
+    chg_n = _minmax_norm(chg_vals, min(chg_vals), max(chg_vals))
+    vol_n = _minmax_norm(vol_vals, 1.0, 15.0)
+    w1_n  = _minmax_norm(w1_vals,  min(w1_vals),  max(w1_vals))
+
+    has_m1 = [v is not None for v in m1_vals]
+    m1_filled = [v if v is not None else 0.0 for v in m1_vals]
+    m1_n = _minmax_norm(m1_filled, min(m1_filled), max(m1_filled)) if any(has_m1) else [0.0] * len(df)
+
+    scores = []
+    for i, row_has_m1 in enumerate(has_m1):
+        if row_has_m1:
+            s = rs_n[i]*0.40 + w1_n[i]*0.25 + chg_n[i]*0.15 + vol_n[i]*0.10 + m1_n[i]*0.10
+        else:
+            s = rs_n[i]*0.50 + w1_n[i]*0.25 + chg_n[i]*0.15 + vol_n[i]*0.10
+        scores.append(round(s, 1))
+
+    df["score"] = scores
+    df["score_color"] = df["score"].apply(
+        lambda x: "#3fb950" if x >= 70 else ("#d29922" if x >= 50 else "#8b949e")
+    )
+    return df.sort_values("score", ascending=False).reset_index(drop=True)
+
+
+def build_theme_groups(df: "pd.DataFrame") -> tuple:
+    """테마별 그룹핑. 정렬: 종목수×평균점수 내림차순."""
+    from collections import defaultdict as _dd
+    groups: dict = _dd(list)
+    for _, row in df.iterrows():
+        themes = [t.strip() for t in str(row.get("theme", "기타")).split(",")]
+        primary = themes[0] if themes else "기타"
+        if primary == "미분류":
+            primary = "기타"
+        groups[primary].append(row.to_dict())
+
+    theme_list = []
+    singles = []
+    for name, stocks in groups.items():
+        sub_df = pd.DataFrame(stocks).sort_values("score", ascending=False).reset_index(drop=True)
+        theme_list.append((name, sub_df))
+
+    theme_list.sort(key=lambda x: -(len(x[1]) * x[1]["score"].mean()), reverse=False)
+    theme_list.sort(key=lambda x: len(x[1]) * x[1]["score"].mean(), reverse=True)
+    return theme_list
+
+
+def render_theme_rank_table(theme_df: "pd.DataFrame") -> None:
+    """테마 내 랭킹 테이블 렌더링."""
+    cols = ["종목명", "시총(조)", "점수", "RS", "RSI", "1W%", "1M%", "등락%", "거래량배율", "대금(억)", "태그"]
+    display = pd.DataFrame({
+        "종목명":     theme_df["name"],
+        "시총(조)":   theme_df["market_cap_조"].map("{:.1f}".format),
+        "점수":       theme_df["score"].map("{:.0f}".format),
+        "RS":         theme_df["rs_proxy"].map("{:.0f}".format),
+        "RSI":        theme_df["rsi"].apply(lambda x: f"{x:.0f}" if x is not None else "—"),
+        "1W%":        theme_df["return_1w"].apply(lambda x: f"{x:+.1f}%" if x is not None else "—"),
+        "1M%":        theme_df["return_1m"].apply(lambda x: f"{x:+.1f}%" if x is not None else "—"),
+        "등락%":      theme_df["change"].map("{:+.1f}%".format),
+        "거래량배율": theme_df["vol_ratio"].map("{:.1f}x".format),
+        "대금(억)":   theme_df["trade_value_억"].map("{:,.0f}".format),
+        "태그":       theme_df["tag"].fillna(""),
+    })
+    display.index = [f"#{i+1}" for i in range(len(display))]
+
+    def _score_color(val):
+        try:
+            v = float(val)
+            if v >= 70: return "color: #3fb950; font-weight:700"
+            if v >= 50: return "color: #d29922; font-weight:700"
+            return "color: #8b949e"
+        except Exception:
+            return ""
+
+    def _pct_color(val):
+        try:
+            v = float(str(val).replace("%", "").replace("—", ""))
+            return "color: #3fb950" if v > 0 else ("color: #f85149" if v < 0 else "")
+        except Exception:
+            return ""
+
+    styled = display.style \
+        .map(_score_color, subset=["점수"]) \
+        .map(_pct_color, subset=["1W%", "1M%", "등락%"])
+
+    st.dataframe(styled, use_container_width=True, height=min(500, 45 + len(display) * 36))
+
+
+# ════════════════════════════════════════════════════════════════════════════
 # TAB — 🔥 특징주 (테마별 분류)
 # ════════════════════════════════════════════════════════════════════════════
 with tab_theme:
     _theme_path = ALERTS / "theme_screener.json"
-    if _theme_path.exists():
+    if not _theme_path.exists():
+        st.subheader("🔥 특징주 테마별 분류")
+        st.info("데이터 없음 — 장마감(15:40) 후 자동 생성됩니다")
+    else:
         _th = json.loads(_theme_path.read_text(encoding="utf-8"))
         _th_stocks = _th.get("stocks", [])
-        _th_date = _th.get("date", "")
-        _th_crit = _th.get("criteria", "")
+        _th_date   = _th.get("date", "")
+        _th_crit   = _th.get("criteria", "")
 
         st.subheader(f"🔥 특징주 테마별 분류 — {_th_date}")
         st.caption(f"기준: {_th_crit}")
 
-        if _th_stocks:
-            from collections import defaultdict as _defaultdict
+        if not _th_stocks:
+            st.info("필터 통과 종목 없음")
+        else:
+            # ── 점수 계산 (SQLite 배치 조회) ──
+            _tickers_tuple = tuple(s["ticker"] for s in _th_stocks)
+            _ohlcv = fetch_ohlcv_batch(_tickers_tuple)
+            _df_scored = compute_scores(_th_stocks, _ohlcv)
+            _theme_list = build_theme_groups(_df_scored)
+            _theme_notes = load_theme_notes()
 
-            # 테마별 그룹핑 (첫 번째 키워드 기준, 합산 시총 내림차순)
-            _theme_groups = _defaultdict(list)
-            for _s in _th_stocks:
-                _themes = [t.strip() for t in _s.get("theme", "기타").split(",")]
-                _primary = _themes[0] if _themes else "기타"
-                if _primary == "미분류":
-                    _primary = "기타"
-                _theme_groups[_primary].append(_s)
+            # ── 뷰 선택 ──
+            _view = st.radio("", ["📋 테마 카드", "🏆 대장판독기"], horizontal=True, key="theme_view_mode")
+            st.divider()
 
-            _sorted_groups = sorted(
-                _theme_groups.items(),
-                key=lambda x: -sum(s.get("market_cap_조", 0) for s in x[1])
-            )
-            _theme_tab_data = [(k, v) for k, v in _sorted_groups if len(v) >= 2]
-            _singles = [s for k, v in _sorted_groups if len(v) < 2 for s in v]
+            # ════════════════════════════════════════
+            # VIEW A — 📋 테마 카드 (수직 expander)
+            # ════════════════════════════════════════
+            if _view == "📋 테마 카드":
+                for _tname, _tdf in _theme_list:
+                    _leader       = _tdf.iloc[0]
+                    _total_val    = _tdf["trade_value_억"].sum()
+                    _total_cap    = _tdf["market_cap_조"].sum()
+                    _top_chg      = _tdf["change"].max()
+                    _sc           = _leader["score"]
+                    _sc_color     = "#3fb950" if _sc >= 70 else ("#d29922" if _sc >= 50 else "#8b949e")
+                    _note_data    = _theme_notes.get(_tname, {})
+                    _desc         = _note_data.get("desc", "")
+                    _edit_key     = f"editing_{_tname}"
 
-            # 탭 레이블
-            _tab_labels = [f"{k} ({len(v)})" for k, v in _theme_tab_data]
-            if _singles:
-                _tab_labels.append(f"📌 기타 ({len(_singles)})")
-
-            _tabs = st.tabs(_tab_labels)
-
-            # ── 테마 그룹 탭 ──
-            for _ti, (_tname, _tstocks) in enumerate(_theme_tab_data):
-                with _tabs[_ti]:
-                    _total_val = sum(s.get("trade_value_억", 0) for s in _tstocks)
-                    _total_cap = sum(s.get("market_cap_조", 0) for s in _tstocks)
-                    _top_chg   = max(s.get("change", 0) for s in _tstocks)
-
-                    # 요약 metric 3열
-                    _m1, _m2, _m3 = st.columns(3)
-                    _m1.metric("합산 거래대금", f"{_total_val:,.0f}억")
-                    _m2.metric("합산 시총", f"{_total_cap:.1f}조")
-                    _m3.metric("최고 상승률", f"+{_top_chg:.1f}%")
-                    st.divider()
-
-                    # 종목 카드 (3열 그리드, 등락률 내림차순)
-                    _sorted_stocks = sorted(_tstocks, key=lambda x: -x.get("change", 0))
-                    for _row_i in range(0, len(_sorted_stocks), 3):
-                        _chunk = _sorted_stocks[_row_i:_row_i + 3]
-                        _cols = st.columns(3)
-                        for _ci, _s in enumerate(_chunk):
-                            with _cols[_ci]:
-                                _tag = f"  {_s['tag']}" if _s.get("tag") else ""
-                                st.metric(
-                                    label=f"{_s['name']}{_tag}",
-                                    value=f"+{_s['change']:.1f}%",
-                                    delta=f"대금 {_s['trade_value_억']:,.0f}억 · 시총 {_s['market_cap_조']:.1f}조",
-                                    delta_color="off",
+                    # expander 레이블: 테마명 + 요약 메타
+                    _exp_label = (
+                        f"**{_tname}** &nbsp; "
+                        f"<span style='color:{_sc_color};font-size:12px'>{_sc:.0f}점</span> &nbsp; "
+                        f"<span style='color:#8b949e;font-size:11px'>대장 {_leader['name']} · "
+                        f"합산대금 {_total_val:,.0f}억 · {len(_tdf)}종목</span>"
+                    )
+                    with st.expander(_exp_label, expanded=False):
+                        # ── 설명 영역 ──
+                        _c_desc, _c_btn = st.columns([10, 1])
+                        with _c_desc:
+                            if st.session_state.get(_edit_key):
+                                _new_desc = st.text_area(
+                                    "테마 설명",
+                                    value=_desc,
+                                    height=80,
+                                    key=f"textarea_{_tname}",
+                                    label_visibility="collapsed",
                                 )
-                                st.caption(f"거래량 {_s['vol_ratio']:.1f}배 | {_s['ticker']}")
+                            else:
+                                if _desc:
+                                    st.markdown(
+                                        f"<div style='color:#c9d1d9;font-size:12px;padding:6px 0'>{_desc}</div>",
+                                        unsafe_allow_html=True,
+                                    )
+                                else:
+                                    st.caption("설명 없음 — ✏️ 버튼으로 추가")
+                        with _c_btn:
+                            if not st.session_state.get(_edit_key):
+                                if st.button("✏️", key=f"edit_btn_{_tname}", help="설명 편집"):
+                                    st.session_state[_edit_key] = True
+                                    st.rerun()
+                            else:
+                                if st.button("💾", key=f"save_btn_{_tname}", help="저장"):
+                                    save_theme_note(_tname, st.session_state.get(f"textarea_{_tname}", ""))
+                                    st.session_state[_edit_key] = False
+                                    st.rerun()
 
-            # ── 기타 단독 탭 ──
-            if _singles:
-                with _tabs[len(_theme_tab_data)]:
-                    _sorted_singles = sorted(_singles, key=lambda x: -x.get("market_cap_조", 0))
-                    for _row_i in range(0, len(_sorted_singles), 3):
-                        _chunk = _sorted_singles[_row_i:_row_i + 3]
-                        _cols = st.columns(3)
-                        for _ci, _s in enumerate(_chunk):
-                            with _cols[_ci]:
-                                _tag = f"  {_s['tag']}" if _s.get("tag") else ""
-                                st.metric(
-                                    label=f"{_s['name']}{_tag}",
-                                    value=f"+{_s['change']:.1f}%",
-                                    delta=f"대금 {_s['trade_value_억']:,.0f}억 · 시총 {_s['market_cap_조']:.1f}조",
-                                    delta_color="off",
+                        st.divider()
+
+                        # ── 종목 테이블 ──
+                        _tbl = pd.DataFrame({
+                            "종목명":     _tdf["name"],
+                            "등락%":      _tdf["change"].map("{:+.1f}%".format),
+                            "거래량배율": _tdf["vol_ratio"].map("{:.1f}x".format),
+                            "대금(억)":   _tdf["trade_value_억"].map("{:,.0f}".format),
+                            "시총(조)":   _tdf["market_cap_조"].map("{:.1f}".format),
+                            "RS":         _tdf["rs_proxy"].map("{:.0f}".format),
+                            "점수":       _tdf["score"].map("{:.0f}".format),
+                            "태그":       _tdf["tag"].fillna(""),
+                        })
+                        _tbl.index = [f"#{i+1}" for i in range(len(_tbl))]
+
+                        def _card_score_color(val):
+                            try:
+                                v = float(val)
+                                if v >= 70: return "color:#3fb950;font-weight:700"
+                                if v >= 50: return "color:#d29922;font-weight:700"
+                                return "color:#8b949e"
+                            except Exception:
+                                return ""
+
+                        def _card_chg_color(val):
+                            try:
+                                v = float(str(val).replace("%",""))
+                                return "color:#3fb950" if v > 0 else ("color:#f85149" if v < 0 else "")
+                            except Exception:
+                                return ""
+
+                        st.dataframe(
+                            _tbl.style
+                                .map(_card_score_color, subset=["점수"])
+                                .map(_card_chg_color, subset=["등락%"]),
+                            use_container_width=True,
+                            height=min(400, 45 + len(_tbl) * 36),
+                        )
+
+                        # 대장판독기로 이동
+                        if st.button(
+                            f"🏆 {_tname} 대장판독기 →",
+                            key=f"goto_dj_{_tname}",
+                            use_container_width=False,
+                        ):
+                            st.session_state["selected_theme"] = _tname
+                            st.session_state["theme_view_mode"] = "🏆 대장판독기"
+                            st.rerun()
+
+            # ════════════════════════════════════════
+            # VIEW B — 🏆 대장판독기
+            # ════════════════════════════════════════
+            else:
+                _theme_names = [t for t, _ in _theme_list]
+                if "selected_theme" not in st.session_state or st.session_state["selected_theme"] not in _theme_names:
+                    st.session_state["selected_theme"] = _theme_names[0] if _theme_names else ""
+
+                _left, _right = st.columns([1, 3])
+
+                with _left:
+                    # 대장 of 대장 배너
+                    _overall_leader = _df_scored.iloc[0]
+                    _ol_sc  = _overall_leader["score"]
+                    _ol_col = "#3fb950" if _ol_sc >= 70 else ("#d29922" if _ol_sc >= 50 else "#8b949e")
+                    st.markdown(f"""
+<div class='daejang-banner'>
+  <div style='font-size:10px;color:#8b949e;margin-bottom:3px'>🏆 대장 of 대장</div>
+  <div style='font-size:15px;font-weight:700;color:#e6edf3'>{_overall_leader['name']}</div>
+  <div style='margin-top:3px;font-size:11px'>
+    <span style='color:{_ol_col};font-weight:700'>{_ol_sc:.0f}점</span>
+    <span style='color:#8b949e;margin-left:6px'>{_overall_leader['change']:+.1f}% · RS {_overall_leader['rs_proxy']:.0f}</span>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+                    if st.button("📊 전체 테마 비교", key="btn_daejang_all", use_container_width=True):
+                        st.session_state["selected_theme"] = "__ALL__"
+
+                    st.markdown("<div style='margin-bottom:6px'></div>", unsafe_allow_html=True)
+
+                    # 테마 버튼 목록
+                    for _tname, _tdf in _theme_list:
+                        _lr  = _tdf.iloc[0]
+                        _sc  = _lr["score"]
+                        _act = st.session_state.get("selected_theme") == _tname
+                        _sc_col = "#3fb950" if _sc >= 70 else ("#d29922" if _sc >= 50 else "#8b949e")
+                        _border = "#f0883e" if _act else "#30363d"
+                        _bg = "rgba(240,136,62,0.07)" if _act else "#161b22"
+                        st.markdown(f"""
+<div style='background:{_bg};border:1px solid {_border};border-radius:6px;padding:7px 10px;margin-bottom:3px'>
+  <div style='font-size:10px;color:#8b949e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_tname}</div>
+  <div style='display:flex;justify-content:space-between;align-items:center;margin-top:2px'>
+    <span style='font-size:12px;font-weight:600;color:#e6edf3'>{_lr['name']}</span>
+    <span style='font-size:11px;font-weight:700;color:{_sc_col}'>{_sc:.0f}점</span>
+  </div>
+</div>""", unsafe_allow_html=True)
+                        if st.button(_tname, key=f"dj_btn_{_tname}", use_container_width=True):
+                            st.session_state["selected_theme"] = _tname
+                            st.rerun()
+
+                with _right:
+                    _sel = st.session_state.get("selected_theme", "")
+
+                    if _sel == "__ALL__":
+                        # 전체 테마 대장주 비교표
+                        st.markdown("### 📊 테마별 대장주 비교")
+                        _all_leaders = []
+                        for _tname, _tdf in _theme_list:
+                            _lr = _tdf.iloc[0].to_dict()
+                            _lr["테마"] = _tname
+                            _all_leaders.append(_lr)
+                        _df_all = pd.DataFrame(_all_leaders)
+                        _df_all_disp = pd.DataFrame({
+                            "테마":     _df_all["테마"],
+                            "대장주":   _df_all["name"],
+                            "점수":     _df_all["score"].map("{:.0f}".format),
+                            "RS":       _df_all["rs_proxy"].map("{:.0f}".format),
+                            "1W%":      _df_all["return_1w"].apply(lambda x: f"{x:+.1f}%" if x is not None else "—"),
+                            "등락%":    _df_all["change"].map("{:+.1f}%".format),
+                            "대금(억)": _df_all["trade_value_억"].map("{:,.0f}".format),
+                            "시총(조)": _df_all["market_cap_조"].map("{:.1f}".format),
+                        })
+
+                        def _sc_all(val):
+                            try:
+                                v = float(val)
+                                if v >= 70: return "color:#3fb950;font-weight:700"
+                                if v >= 50: return "color:#d29922;font-weight:700"
+                                return "color:#8b949e"
+                            except Exception:
+                                return ""
+
+                        st.dataframe(
+                            _df_all_disp.style.map(_sc_all, subset=["점수"]),
+                            use_container_width=True,
+                            hide_index=True,
+                            height=min(600, 45 + len(_df_all_disp) * 36),
+                        )
+
+                    else:
+                        # 선택된 테마 랭킹 테이블
+                        _sel_dict = {t: df for t, df in _theme_list}
+                        _sel_df   = _sel_dict.get(_sel, _theme_list[0][1] if _theme_list else pd.DataFrame())
+                        if not _sel_df.empty:
+                            _ldr      = _sel_df.iloc[0]
+                            _sc       = _ldr["score"]
+                            _sc_col   = "#3fb950" if _sc >= 70 else ("#d29922" if _sc >= 50 else "#8b949e")
+                            _total_v  = _sel_df["trade_value_억"].sum()
+                            _total_c  = _sel_df["market_cap_조"].sum()
+                            # 테마 설명
+                            _note     = _theme_notes.get(_sel, {}).get("desc", "")
+
+                            st.markdown(f"""
+<div style='margin-bottom:8px'>
+  <span style='font-size:16px;font-weight:700;color:#e6edf3'>{_sel}</span>
+  <span class='badge-leader'>대장주: {_ldr['name']} ({_sc:.0f}점)</span>
+</div>
+<div style='font-size:11px;color:#8b949e;margin-bottom:6px'>
+  합산대금 {_total_v:,.0f}억 &nbsp;·&nbsp; 합산시총 {_total_c:.1f}조 &nbsp;·&nbsp; {len(_sel_df)}종목
+</div>""", unsafe_allow_html=True)
+
+                            if _note:
+                                st.markdown(
+                                    f"<div style='color:#c9d1d9;font-size:12px;margin-bottom:10px;"
+                                    f"background:#161b22;border:1px solid #30363d;border-radius:6px;"
+                                    f"padding:8px 12px'>{_note}</div>",
+                                    unsafe_allow_html=True,
                                 )
-                                st.caption(_s.get("theme", ""))
+
+                            render_theme_rank_table(_sel_df)
 
             # ── 원본 데이터 테이블 (접이식) ──
             st.divider()
             with st.expander("📊 원본 데이터 테이블", expanded=False):
-                _df_th = pd.DataFrame(_th_stocks)[["ticker","name","change","vol_ratio","trade_value_억","market_cap_조","theme","tag","rs_proxy"]]
-                _df_th.columns = ["코드","종목명","등락(%)","거래량배율","거래대금(억)","시총(조)","테마","태그","RS프록시"]
-                _df_th = _df_th.sort_values("RS프록시", ascending=False).reset_index(drop=True)
+                _df_th_raw = _df_scored[["ticker","name","change","vol_ratio","trade_value_억","market_cap_조","theme","tag","rs_proxy","score"]].copy()
+                _df_th_raw.columns = ["코드","종목명","등락(%)","거래량배율","거래대금(억)","시총(조)","테마","태그","RS프록시","점수"]
+                _df_th_raw = _df_th_raw.sort_values("점수", ascending=False).reset_index(drop=True)
                 st.dataframe(
-                    _df_th.style.background_gradient(subset=["등락(%)"], cmap="RdYlGn", vmin=0, vmax=15)
-                                .background_gradient(subset=["거래량배율"], cmap="Blues", vmin=1, vmax=5),
+                    _df_th_raw.style
+                        .background_gradient(subset=["등락(%)"], cmap="RdYlGn", vmin=0, vmax=15)
+                        .background_gradient(subset=["거래량배율"], cmap="Blues", vmin=1, vmax=5)
+                        .background_gradient(subset=["점수"], cmap="RdYlGn", vmin=0, vmax=100),
                     use_container_width=True,
                     hide_index=True,
-                    height=min(500, 35 + len(_df_th) * 35),
+                    height=min(500, 35 + len(_df_th_raw) * 35),
                 )
-        else:
-            st.info("필터 통과 종목 없음")
-    else:
-        st.subheader("🔥 특징주 테마별 분류")
-        st.info("데이터 없음 — 장마감(15:40) 후 자동 생성됩니다")
 
 
 # ════════════════════════════════════════════════════════════════════════════

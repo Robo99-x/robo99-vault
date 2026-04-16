@@ -213,6 +213,63 @@ def load_ticker_state(name: str) -> tuple[Path, dict]:
     return new_path, {}
 
 
+TICKER_MD_SECTION = "## 특징주 기록"
+_TICKER_MD_COMMENT = "<!-- entity_syncer가 자동 기록. 아래 내용은 수동 편집 가능. -->"
+
+
+def ensure_ticker_md(
+    name: str,
+    ticker: str,
+    themes: list,
+    screener_row: dict,
+) -> None:
+    """tickers/<name>.md 에 특징주 기록 섹션이 없으면 생성하고 날짜 항목을 추가한다."""
+    md_path = TICKERS_DIR / f"{name}.md"
+    when = screener_row.get("date", TODAY_S)
+    theme_str = screener_row.get("theme", ", ".join(themes))
+
+    # 날짜별 항목 텍스트
+    tag_part = f" | **태그:** {screener_row['tag']}" if screener_row.get("tag") else ""
+    entry = (
+        f"\n### {when}\n"
+        f"- **테마:** {theme_str}\n"
+        f"- **등락:** {screener_row.get('change', 0):+.1f}%"
+        f" | **대금:** {screener_row.get('trade_value_억', 0):,.0f}억"
+        f" | **시총:** {screener_row.get('market_cap_조', 0):.1f}조"
+        f" | **거래량배율:** {screener_row.get('vol_ratio', 0):.1f}x\n"
+        f"- **RS:** {screener_row.get('rs_proxy', 0):.0f}"
+        f"{tag_part}\n"
+    )
+
+    template_path = TICKERS_DIR / "_TEMPLATE.md"
+    if not md_path.exists():
+        if not template_path.exists():
+            return
+        body = template_path.read_text(encoding="utf-8")
+        body = (
+            body
+            .replace("{{name}}", name)
+            .replace("{{ticker}}", ticker)
+            .replace('ticker: ""', f'ticker: "{ticker}"')
+            .replace("name: 종목명", f"name: {name}")
+            .replace("status: watchlist", "status: monitoring")
+        )
+        theme_links = " ".join(f"[[{t}]]" for t in themes) if themes else "<!-- 없음 -->"
+        body = body.replace("<!-- [[themes/테마명]] -->", theme_links)
+        body = body.replace(_TICKER_MD_COMMENT, _TICKER_MD_COMMENT + entry)
+        md_path.write_text(body, encoding="utf-8")
+    else:
+        content = md_path.read_text(encoding="utf-8")
+        if f"### {when}" in content:
+            return  # 이미 오늘 항목 있음
+        if TICKER_MD_SECTION in content:
+            idx = content.index(TICKER_MD_SECTION) + len(TICKER_MD_SECTION)
+            content = content[:idx] + entry + content[idx:]
+        else:
+            content += f"\n{TICKER_MD_SECTION}\n{_TICKER_MD_COMMENT}" + entry
+        md_path.write_text(content, encoding="utf-8")
+
+
 def touch_ticker(
     name: str,
     *,
@@ -226,6 +283,11 @@ def touch_ticker(
     path, data = load_ticker_state(name)
     old_data = dict(data)  # snapshot for event log
     created = not path.exists()
+
+    # transient 키 분리 (YAML에 저장하지 않음)
+    screener_row = None
+    if extra:
+        screener_row = extra.pop("_screener_row", None)
 
     # 코드가 새로 들어오면 파일명을 <코드>-<이름>.yaml 로 표준화
     code_in = (extra or {}).get("ticker")
@@ -273,6 +335,18 @@ def touch_ticker(
         report.ticker_created.append(name)
     report.ticker_touched.append(name)
 
+    # per-ticker MD 자동 기록 (screener 이벤트만, dry_run 제외)
+    if kind == "screener" and screener_row and not dry_run:
+        try:
+            ensure_ticker_md(
+                name=name,
+                ticker=data.get("ticker", ""),
+                themes=data.get("themes", []),
+                screener_row=screener_row,
+            )
+        except Exception as _e:
+            report.warnings.append(f"ensure_ticker_md({name}) 실패: {_e}")
+
 
 def sync_theme_briefing(report: SyncReport, dry_run: bool) -> None:
     """오늘(또는 최근) theme_briefing_*.md 에서 ticker 언급 수집."""
@@ -316,15 +390,27 @@ def sync_theme_briefing(report: SyncReport, dry_run: bool) -> None:
                 code = str(row.get("ticker") or row.get("code") or "").strip()
                 if not nm:
                     continue
-                extra = {}
+                extra: dict = {}
                 if code:
                     extra["ticker"] = code
                 theme_str = row.get("theme") or ""
+                themes: list = []
                 if theme_str:
                     # "테마A, 테마B(설명)" → ["테마A","테마B"]
                     themes = [t.split("(")[0].strip() for t in re.split(r"[,/]", theme_str) if t.strip()]
                     if themes:
                         extra["themes"] = themes
+                # screener 전체 데이터 전달 (ensure_ticker_md 에서 사용, YAML에는 저장 안 함)
+                extra["_screener_row"] = {
+                    "date": scr_date,
+                    "change": row.get("change"),
+                    "vol_ratio": row.get("vol_ratio"),
+                    "trade_value_억": row.get("trade_value_억"),
+                    "market_cap_조": row.get("market_cap_조"),
+                    "rs_proxy": row.get("rs_proxy"),
+                    "tag": row.get("tag", ""),
+                    "theme": theme_str,
+                }
                 touch_ticker(
                     nm,
                     kind="screener",

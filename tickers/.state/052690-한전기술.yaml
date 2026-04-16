@@ -1,0 +1,19 @@
+ticker: 052690
+name: 한전기술
+status: monitoring
+status_since: '2026-04-16'
+thesis: ''
+themes:
+- 밸류업
+- 코리아 밸류업 지수
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-16'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-16.md
+- date: '2026-04-16'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-16'
+last_briefed: '2026-04-16'

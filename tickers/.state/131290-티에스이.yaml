@@ -1,0 +1,19 @@
+ticker: '131290'
+name: 티에스이
+status: monitoring
+status_since: '2026-04-16'
+thesis: ''
+themes:
+- LED장비
+- OLED
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-16'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-16.md
+- date: '2026-04-16'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-16'
+last_briefed: '2026-04-16'

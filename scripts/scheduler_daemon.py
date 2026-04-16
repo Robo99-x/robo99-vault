@@ -209,46 +209,54 @@ def job_market_report():
 
 
 def job_premarket():
-    """평일 08:00 — 장전 브리핑 (엔티티 기반 delta-only, vault_writer 경유)"""
+    """평일 08:00 — 장전 브리핑 (compiled context 기반 delta-only, vault_writer 경유)"""
     log.info("=== 장전 브리핑 시작 ===")
     today = datetime.now(KST).strftime("%Y-%m-%d")
     vw = _get_vault_writer()
 
+    # Step 1: compiled context 생성 (Python이 .state 파일 전체를 읽어 요약)
+    ctx_ok = run_script("compile_premarket_context.py")
+    ctx_path = f"~/robo99_hq/alerts/compiled/premarket_context_{today}.json"
+    if not ctx_ok:
+        log.warning("compile_premarket_context 경고 발생 — 컨텍스트 파일은 생성됨, 브리핑 계속 진행")
+
+    # Step 2: LLM은 compiled context 한 파일만 읽고 JSON 반환
     stdout = run_claude(
-        "Read ~/CLAUDE.md. "
-        "Read ~/robo99_hq/watchlist.md. "
-        "Read ~/robo99_hq/alerts/theme_screener.json (전일 특징주 스크리너 결과). "
+        f"Read {ctx_path}. "
         f"Today is {today}. "
-        "=== 엔티티 우선 읽기 (중복 브리핑 방지) === "
-        "Before writing anything, glob and read ALL files under ~/robo99_hq/tickers/.state/*.yaml. "
-        "For each ACTIVE watchlist 종목, locate its corresponding yaml file. "
-        "From each yaml, note: status, status_since, thesis, last_briefed, catalysts_pending, invalidation, next_review. "
-        "Also read the most recent ~/robo99_hq/alerts/theme_briefing_*.md file to know what was already reported yesterday. "
+        "이 파일에는 장전 브리핑에 필요한 모든 엔티티 상태가 컴파일되어 있다. "
+        "주요 필드: "
+        "  watchlist_active[]: 각 종목의 status/thesis/last_briefed/days_since_briefed/catalysts_pending/invalidation/next_review/is_review_due. "
+        "  active_events[]: 이벤트 phase, linked_tickers, last_catalyst. "
+        "  prev_briefing_date + prev_briefing_summary: 어제 브리핑 내용 (반복 방지용). "
+        "  screener_top[]: 전일 스크리너 상위 종목 (change_pct/vol_ratio/is_reappearance). "
+        "  compile_warnings[]: 파싱 경고 목록 (ZERO_PARSE/UNRESOLVED_ALIAS 있으면 macro_context에 한 줄 언급). "
         "=== Delta-only 원칙 === "
-        "DO NOT repeat yesterday's content. For each watchlist ticker, output ONLY one of: "
-        "(a) NEW OVERNIGHT NEWS — specific headline/data point that did not exist at last_briefed; "
-        "(b) STATUS CHANGE — catalysts_pending now resolved, invalidation triggered, thesis materially changed; "
-        "(c) SCHEDULED TODAY — next_review == today, or a known catalyst lands today; "
-        "(d) NO CHANGE — list ONLY the ticker name. "
+        "DO NOT repeat yesterday's content (prev_briefing_summary 참조). "
+        "For each watchlist_active ticker, output ONLY one of: "
+        "(a) new_news — overnight specific headline/data not in prev_briefing_summary; "
+        "(b) status_change — catalysts_pending resolved, invalidation triggered, thesis changed; "
+        "(c) scheduled — is_review_due==true or known catalyst lands today; "
+        "(d) no_change — no new information since last_briefed. "
         "=== 출력 형식: 반드시 JSON 만 출력 === "
         "DO NOT write any files. DO NOT send Telegram. DO NOT output markdown. "
-        "Output ONLY a single JSON object to stdout with this exact structure: "
+        "Output ONLY a single JSON object: "
         '{"briefing_date": "YYYY-MM-DD", '
-        '"macro_context": "1-2 line summary of overnight macro events", '
+        '"macro_context": "1-2 line overnight macro summary", '
         '"items": [{"ticker_code": "005930", "ticker_name": "삼성전기", '
         '"change_type": "new_news|status_change|scheduled|no_change", '
         '"priority": "A|B|C", "reason": "one-line narrative", '
         '"themes": ["MLCC"], "action_hint": "intraday checkpoint"}], '
-        '"unchanged_tickers": ["LITE", "NVDA", ...], '
+        '"unchanged_tickers": ["LITE", "NVDA"], '
         '"screener_top5": [{"ticker_code": "028050", "ticker_name": "삼성E&A", '
         '"change_pct": 5.65, "vol_ratio": 5.8, "trade_value_억": 4813, '
         '"market_cap_조": 9.9, "tag": "🚀55일신고가", "is_reappearance": true, '
         '"catalyst": "one-line reason"}], '
         f'"screener_date": "{today}"'
         "} "
-        "Items with change_type=no_change need only ticker_code and ticker_name. "
-        "For items with change_type!=no_change, priority (A/B/C) and reason are required. "
-        "screener_top5: rs_proxy 상위 5종목. is_reappearance=true if already in tickers/.state with last_briefed recent. "
+        "no_change items: ticker_code + ticker_name only. "
+        "non-no_change items: priority + reason required. "
+        "screener_top5: screener_top 상위 5종목 그대로 사용 (is_reappearance는 컨텍스트 값 사용). "
         "Output ONLY the JSON — no explanation, no markdown, no extra text.",
         "장전 브리핑",
     )
@@ -266,10 +274,14 @@ def job_premarket():
         if result.get("warnings"):
             log.warning(f"경고: {result['warnings']}")
     else:
-        # fallback: vault_writer 미사용 시 기존 방식 (파일 저장은 Claude 가 했으리라 가정)
-        log.warning("vault_writer 미사용 — stdout 저장만 시도")
-        fb_path = BASE / f"alerts/premarket_briefing_{today}.md"
-        fb_path.write_text(stdout)
+        # vault_writer import 실패 — live 파일 직접 쓰기 금지, quarantine 보존 후 알림
+        log.error(f"vault_writer 미사용 (import 오류: {_VW_IMPORT_ERR}) — live 파일 저장 차단")
+        q_dir = BASE / "alerts" / "quarantine"
+        q_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(KST).strftime("%Y%m%d_%H%M%S")
+        q_path = q_dir / f"{ts}_premarket_no_vault_writer.txt"
+        q_path.write_text(stdout, encoding="utf-8")
+        notify_failure("장전 브리핑", f"vault_writer import 실패로 파일 저장 차단. raw stdout → {q_path.name}")
 
 
 def job_screening_morning():
@@ -362,9 +374,14 @@ def job_theme_screener():
         if result.get("warnings"):
             log.warning(f"경고: {result['warnings']}")
     else:
-        log.warning("vault_writer 미사용 — stdout 저장만 시도")
-        fb_path = BASE / f"alerts/theme_briefing_{today}.md"
-        fb_path.write_text(stdout)
+        # vault_writer import 실패 — live 파일 직접 쓰기 금지, quarantine 보존 후 알림
+        log.error(f"vault_writer 미사용 (import 오류: {_VW_IMPORT_ERR}) — live 파일 저장 차단")
+        q_dir = BASE / "alerts" / "quarantine"
+        q_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now(KST).strftime("%Y%m%d_%H%M%S")
+        q_path = q_dir / f"{ts}_theme_screener_no_vault_writer.txt"
+        q_path.write_text(stdout, encoding="utf-8")
+        notify_failure("장마감 특징주 분류", f"vault_writer import 실패로 파일 저장 차단. raw stdout → {q_path.name}")
 
 
 def job_system_health():
@@ -385,6 +402,52 @@ def job_system_health():
         "Format: [시스템 점검 {today}] 스케줄 N/N 성공, 데이터 신선도 OK/STALE, watchlist 동기화 상태.",
         "시스템 자가 점검",
     )
+
+
+def job_weekly_upgrade():
+    """토요일 08:00 — 히트레이트 분석 + 시장 레짐 파라미터 업그레이드"""
+    log.info("=== weekly_market_upgrade 시작 ===")
+    result = run_script("weekly_market_upgrade.py", retries=1)
+    if result is None:
+        notify_failure("weekly_market_upgrade", "weekly_market_upgrade.py 실행 실패")
+
+
+def job_vault_push():
+    """매일 23:10 — Obsidian 볼트 변경사항 GitHub 자동 push"""
+    log.info("=== vault git push 시작 ===")
+    import subprocess
+    try:
+        # 변경사항 스테이징
+        subprocess.run(["git", "add", "-A"], cwd=str(BASE), check=True, capture_output=True)
+
+        # 변경사항 있는지 확인
+        diff = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            cwd=str(BASE), capture_output=True
+        )
+        if diff.returncode == 0:
+            log.info("변경사항 없음 — push 스킵")
+            return
+
+        # 커밋
+        today = datetime.now(KST).strftime("%Y-%m-%d %H:%M")
+        msg = f"auto: vault sync {today}"
+        subprocess.run(["git", "commit", "-m", msg], cwd=str(BASE), check=True, capture_output=True)
+
+        # push
+        result = subprocess.run(
+            ["git", "push", "origin", "main"],
+            cwd=str(BASE), capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            log.info("vault push 완료")
+        else:
+            log.error(f"vault push 실패: {result.stderr[:200]}")
+            from lib import telegram
+            telegram.send_alert("vault push 실패", result.stderr[:200])
+
+    except Exception as e:
+        log.error(f"vault push 예외: {e}")
 
 
 # ── 메인 ──────────────────────────────────────────────
@@ -440,6 +503,14 @@ def main():
     sched.add_job(job_system_health, CronTrigger(hour=23, minute=0, timezone=KST),
                   id="system_health", max_instances=1, misfire_grace_time=600)
 
+    # 매일 23:10 — vault GitHub push
+    sched.add_job(job_weekly_upgrade, CronTrigger(day_of_week="sat", hour=8, minute=0, timezone=KST),
+                  id="weekly_upgrade", name="주간 히트레이트·레짐 업그레이드",
+                  misfire_grace_time=3600, max_instances=1)
+
+    sched.add_job(job_vault_push, CronTrigger(hour=23, minute=10, timezone=KST),
+                  id="vault_push", max_instances=1, misfire_grace_time=300)
+
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: (sched.shutdown(wait=False), sys.exit(0)))
 
@@ -450,6 +521,7 @@ def main():
     log.info("  평일 14:00 — 장중 스크리닝")
     log.info("  평일 15:40 — 장마감 특징주 분류")
     log.info("  매일 23:00 — 시스템 자가 점검")
+    log.info("  매일 23:10 — vault GitHub push")
 
     try:
         sched.start()
