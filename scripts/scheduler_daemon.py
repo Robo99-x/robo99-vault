@@ -61,7 +61,7 @@ KST = pytz.timezone("Asia/Seoul")
 SCRIPT_TIMEOUTS = {
     "collect_market_data.py": 600,    # yfinance batch: 넉넉하게 10분
     "stage2_scanner.py": 480,         # 500개 종목 스캔: 8분
-    "rs_ranking.py": 300,             # RS 랭킹: 5분
+    "rs_ranking.py": 600,             # RS 랭킹: 10분 (종목 600개 순차 요청)
     "geek_filter.py": 120,            # 필터링: 2분
     "stage2_briefing.py": 120,        # 브리핑 생성: 2분
     "vcp_scanner.py": 180,            # VCP 스캔: 3분

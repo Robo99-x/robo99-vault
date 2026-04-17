@@ -413,10 +413,78 @@ def load_theme_notes() -> dict:
 def save_theme_note(theme: str, desc: str) -> None:
     """alerts/theme_notes.json 에 테마 설명 저장."""
     notes = load_theme_notes()
-    notes[theme] = {"desc": desc, "updated": KST_NOW.split()[0]}
+    notes[theme] = {"desc": desc, "updated": KST_NOW.split()[0], "manual": True}
     _THEME_NOTES_PATH.write_text(
         json.dumps(notes, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+
+
+@st.cache_data(ttl=600)
+def parse_briefing_descriptions() -> dict:
+    """theme_briefing_*.md 파싱. 반환: {briefing_테마명: {desc, stocks: [이름...]}}
+    포맷: ━━━ 테마명 ━━━ / 설명줄 / • [[종목]] ... 형식
+    """
+    import glob as _glob
+    cands = sorted(_glob.glob(str(ALERTS / "theme_briefing_*.md")))
+    if not cands:
+        return {}
+    try:
+        text = Path(cands[-1]).read_text(encoding="utf-8")
+    except Exception:
+        return {}
+    body = text.split("---", 2)[2] if text.startswith("---") else text
+
+    result = {}
+    sections = re.split(r"━━━\s*(.+?)\s*━━━", body)
+    for i in range(1, len(sections) - 1, 2):
+        btheme = sections[i].strip()
+        btext  = sections[i + 1].strip()
+        lines  = btext.splitlines()
+        desc_lines, stocks = [], []
+        for ln in lines:
+            if ln.startswith("•") or ln.startswith("[["):
+                # [[종목명]] 추출
+                stocks += re.findall(r"\[\[(.+?)]]", ln)
+            elif not ln.strip():
+                if not desc_lines:
+                    continue  # 앞부분 빈 줄 스킵
+            else:
+                if not stocks:  # 종목 줄 나오기 전까지만 설명
+                    desc_lines.append(ln.strip())
+        desc = " ".join(desc_lines).strip()
+        if btheme:
+            result[btheme] = {"desc": desc, "stocks": stocks}
+    return result
+
+
+def get_theme_desc(
+    theme: str,
+    theme_stocks: list,   # 해당 screener 테마의 종목명 리스트
+    notes: dict,
+    briefing_data: dict,
+) -> tuple[str, bool]:
+    """테마 설명 반환. (설명문자열, 수동편집여부)
+    우선순위: 수동편집 > briefing 종목겹침 매핑 > 없음
+    """
+    note = notes.get(theme, {})
+    if note.get("manual") and note.get("desc"):
+        return note["desc"], True
+
+    # briefing 섹션 중 종목 겹침이 가장 많은 곳의 설명 사용
+    if briefing_data:
+        stock_set = set(theme_stocks)
+        best_desc, best_overlap = "", 0
+        for btheme, binfo in briefing_data.items():
+            if btheme == "📌 기타 단독 주요주":
+                continue
+            overlap = len(stock_set & set(binfo.get("stocks", [])))
+            if overlap > best_overlap:
+                best_overlap = overlap
+                best_desc = binfo.get("desc", "")
+        if best_desc:
+            return best_desc, False
+
+    return note.get("desc", ""), False
 
 
 @st.cache_data(ttl=300)
@@ -609,7 +677,8 @@ with tab_theme:
             _ohlcv = fetch_ohlcv_batch(_tickers_tuple)
             _df_scored = compute_scores(_th_stocks, _ohlcv)
             _theme_list = build_theme_groups(_df_scored)
-            _theme_notes = load_theme_notes()
+            _theme_notes    = load_theme_notes()
+            _briefing_descs = parse_briefing_descriptions()
 
             # ── 뷰 선택 ──
             _view = st.radio("", ["📋 테마 카드", "🏆 대장판독기"], horizontal=True, key="theme_view_mode")
@@ -620,43 +689,51 @@ with tab_theme:
             # ════════════════════════════════════════
             if _view == "📋 테마 카드":
                 for _tname, _tdf in _theme_list:
-                    _leader       = _tdf.iloc[0]
-                    _total_val    = _tdf["trade_value_억"].sum()
-                    _total_cap    = _tdf["market_cap_조"].sum()
-                    _top_chg      = _tdf["change"].max()
-                    _sc           = _leader["score"]
-                    _sc_color     = "#3fb950" if _sc >= 70 else ("#d29922" if _sc >= 50 else "#8b949e")
-                    _note_data    = _theme_notes.get(_tname, {})
-                    _desc         = _note_data.get("desc", "")
-                    _edit_key     = f"editing_{_tname}"
+                    _leader    = _tdf.iloc[0]
+                    _total_val = _tdf["trade_value_억"].sum()
+                    _sc        = _leader["score"]
+                    _sc_label  = "🟢" if _sc >= 70 else ("🟡" if _sc >= 50 else "⚪")
+                    _edit_key  = f"editing_{_tname}"
 
-                    # expander 레이블: 테마명 + 요약 메타
+                    # ── expander 라벨: HTML 없이 플레인 텍스트만 ──
                     _exp_label = (
-                        f"**{_tname}** &nbsp; "
-                        f"<span style='color:{_sc_color};font-size:12px'>{_sc:.0f}점</span> &nbsp; "
-                        f"<span style='color:#8b949e;font-size:11px'>대장 {_leader['name']} · "
-                        f"합산대금 {_total_val:,.0f}억 · {len(_tdf)}종목</span>"
+                        f"{_tname}  {_sc_label}{_sc:.0f}점 · "
+                        f"대장 {_leader['name']} · "
+                        f"합산대금 {_total_val:,.0f}억 · {len(_tdf)}종목"
                     )
                     with st.expander(_exp_label, expanded=False):
+
                         # ── 설명 영역 ──
+                        _desc, _is_manual = get_theme_desc(
+                            _tname,
+                            _tdf["name"].tolist(),
+                            _theme_notes,
+                            _briefing_descs,
+                        )
+                        _source_label = "✏️ 수동 편집" if _is_manual else "🤖 AI 자동 생성"
+
                         _c_desc, _c_btn = st.columns([10, 1])
                         with _c_desc:
                             if st.session_state.get(_edit_key):
                                 _new_desc = st.text_area(
                                     "테마 설명",
                                     value=_desc,
-                                    height=80,
+                                    height=90,
                                     key=f"textarea_{_tname}",
                                     label_visibility="collapsed",
                                 )
                             else:
                                 if _desc:
                                     st.markdown(
-                                        f"<div style='color:#c9d1d9;font-size:12px;padding:6px 0'>{_desc}</div>",
+                                        f"<div style='color:#c9d1d9;font-size:12px;"
+                                        f"padding:6px 10px;background:#0d1117;"
+                                        f"border-left:3px solid #30363d;border-radius:0 4px 4px 0;"
+                                        f"margin-bottom:4px'>{_desc}</div>"
+                                        f"<div style='font-size:10px;color:#484f58'>{_source_label}</div>",
                                         unsafe_allow_html=True,
                                     )
                                 else:
-                                    st.caption("설명 없음 — ✏️ 버튼으로 추가")
+                                    st.caption("설명 없음")
                         with _c_btn:
                             if not st.session_state.get(_edit_key):
                                 if st.button("✏️", key=f"edit_btn_{_tname}", help="설명 편집"):
@@ -664,7 +741,10 @@ with tab_theme:
                                     st.rerun()
                             else:
                                 if st.button("💾", key=f"save_btn_{_tname}", help="저장"):
-                                    save_theme_note(_tname, st.session_state.get(f"textarea_{_tname}", ""))
+                                    save_theme_note(
+                                        _tname,
+                                        st.session_state.get(f"textarea_{_tname}", _desc),
+                                    )
                                     st.session_state[_edit_key] = False
                                     st.rerun()
 
@@ -694,7 +774,7 @@ with tab_theme:
 
                         def _card_chg_color(val):
                             try:
-                                v = float(str(val).replace("%",""))
+                                v = float(str(val).replace("%", ""))
                                 return "color:#3fb950" if v > 0 else ("color:#f85149" if v < 0 else "")
                             except Exception:
                                 return ""
@@ -816,8 +896,10 @@ with tab_theme:
                             _sc_col   = "#3fb950" if _sc >= 70 else ("#d29922" if _sc >= 50 else "#8b949e")
                             _total_v  = _sel_df["trade_value_억"].sum()
                             _total_c  = _sel_df["market_cap_조"].sum()
-                            # 테마 설명
-                            _note     = _theme_notes.get(_sel, {}).get("desc", "")
+                            # 테마 설명 (수동편집 우선, 없으면 briefing 자동매핑)
+                            _note, _ = get_theme_desc(
+                                _sel, _sel_df["name"].tolist(), _theme_notes, _briefing_descs
+                            )
 
                             st.markdown(f"""
 <div style='margin-bottom:8px'>

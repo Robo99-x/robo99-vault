@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import json
 import os
 import sys
+import time
 import traceback
 from pathlib import Path
 
@@ -96,6 +97,7 @@ def _rs_scores(tickers, d0, d3m, d6m):
             r6 = c0 / c6 - 1
             score = 0.6 * r3 + 0.4 * r6
             out.append((t, float(score), float(r3), float(r6)))
+            time.sleep(0.1)  # NAVER rate limit 방지
             continue
         except Exception:
             _log_err(f"pykrx price error {t}: {traceback.format_exc().strip()}")
