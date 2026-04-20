@@ -1,0 +1,15 @@
+appearances:
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+catalysts_pending: []
+invalidation: ''
+last_briefed: ''
+last_seen: '2026-04-20'
+name: 두산에너빌리티
+status: monitoring
+status_since: '2026-04-20'
+themes:
+- 원자력
+thesis: ''
+ticker: '034020'

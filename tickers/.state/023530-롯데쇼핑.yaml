@@ -1,4 +1,4 @@
-ticker: ''
+ticker: '023530'
 name: 롯데쇼핑
 status: monitoring
 status_since: '2026-04-16'
@@ -10,5 +10,8 @@ appearances:
 - date: '2026-04-16'
   kind: theme_briefing
   ref: alerts/theme_briefing_2026-04-16.md
-last_seen: '2026-04-16'
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+last_seen: '2026-04-20'
 last_briefed: '2026-04-16'

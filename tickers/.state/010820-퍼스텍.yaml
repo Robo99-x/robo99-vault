@@ -16,5 +16,11 @@ appearances:
 - date: '2026-04-09'
   kind: screener
   ref: alerts/theme_screener.json
-last_seen: '2026-04-09'
-last_briefed: '2026-04-09'
+- date: '2026-04-17'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-17.md
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+last_seen: '2026-04-20'
+last_briefed: '2026-04-17'

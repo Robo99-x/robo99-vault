@@ -1,0 +1,13 @@
+ticker: '071050'
+name: 한국금융지주
+status: monitoring
+status_since: '2026-04-20'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+last_seen: '2026-04-20'

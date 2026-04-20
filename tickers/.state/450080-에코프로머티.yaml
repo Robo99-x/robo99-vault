@@ -1,0 +1,13 @@
+ticker: '450080'
+name: 에코프로머티
+status: monitoring
+status_since: '2026-04-20'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+last_seen: '2026-04-20'

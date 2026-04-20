@@ -213,8 +213,34 @@ def load_ticker_state(name: str) -> tuple[Path, dict]:
     return new_path, {}
 
 
-TICKER_MD_SECTION = "## 특징주 기록"
+TICKER_MD_SECTION = "## 수급 특징주"
+_TICKER_MD_SECTION_LEGACY = "## 특징주 기록"   # 구버전 섹션명 (읽기 호환용)
 _TICKER_MD_COMMENT = "<!-- entity_syncer가 자동 기록. 아래 내용은 수동 편집 가능. -->"
+
+
+def _theme_entry(date_str: str, row: dict, themes: list) -> str:
+    """테마 스크리너 결과를 날짜별 한 줄로 압축.
+
+    형식: YY/MM/DD [테마] +11.7% 대금463억 거래량4.1x 🚀55일신고가
+    """
+    try:
+        from datetime import datetime as _dt
+        d = _dt.strptime(date_str[:10], "%Y-%m-%d")
+        date_display = d.strftime("%y/%m/%d")
+    except Exception:
+        date_display = date_str[:10]
+
+    change    = row.get("change", 0) or 0
+    vol_ratio = row.get("vol_ratio", 0) or 0
+    trade     = row.get("trade_value_억", 0) or 0
+    theme_str = row.get("theme", "") or ", ".join(themes)
+    tag       = (row.get("tag") or "").strip()
+
+    theme_part = f" [{theme_str}]" if theme_str else ""
+    trade_part = f" 대금{trade:.0f}억" if trade else ""
+    tag_part   = f" {tag}" if tag else ""
+
+    return f"{date_display}{theme_part} {change:+.1f}%{trade_part} 거래량{vol_ratio:.1f}x{tag_part}\n"
 
 
 def ensure_ticker_md(
@@ -222,24 +248,19 @@ def ensure_ticker_md(
     ticker: str,
     themes: list,
     screener_row: dict,
+    kind: str = "screener",
 ) -> None:
-    """tickers/<name>.md 에 특징주 기록 섹션이 없으면 생성하고 날짜 항목을 추가한다."""
-    md_path = TICKERS_DIR / f"{name}.md"
-    when = screener_row.get("date", TODAY_S)
-    theme_str = screener_row.get("theme", ", ".join(themes))
+    """tickers/<name>.md 의 '수급 특징주' 섹션에 날짜별 한 줄 기록을 추가한다.
+    테마 스크리너(kind=screener) 이벤트만 기록한다.
+    """
+    if kind != "screener":
+        return  # stage2 등은 .md에 기록하지 않음
 
-    # 날짜별 항목 텍스트
-    tag_part = f" | **태그:** {screener_row['tag']}" if screener_row.get("tag") else ""
-    entry = (
-        f"\n### {when}\n"
-        f"- **테마:** {theme_str}\n"
-        f"- **등락:** {screener_row.get('change', 0):+.1f}%"
-        f" | **대금:** {screener_row.get('trade_value_억', 0):,.0f}억"
-        f" | **시총:** {screener_row.get('market_cap_조', 0):.1f}조"
-        f" | **거래량배율:** {screener_row.get('vol_ratio', 0):.1f}x\n"
-        f"- **RS:** {screener_row.get('rs_proxy', 0):.0f}"
-        f"{tag_part}\n"
-    )
+    md_path = TICKERS_DIR / f"{name}.md"
+    when     = screener_row.get("date", TODAY_S)
+    date_key = when[:10]
+
+    entry = _theme_entry(when, screener_row, themes)
 
     template_path = TICKERS_DIR / "_TEMPLATE.md"
     if not md_path.exists():
@@ -256,18 +277,35 @@ def ensure_ticker_md(
         )
         theme_links = " ".join(f"[[{t}]]" for t in themes) if themes else "<!-- 없음 -->"
         body = body.replace("<!-- [[themes/테마명]] -->", theme_links)
-        body = body.replace(_TICKER_MD_COMMENT, _TICKER_MD_COMMENT + entry)
+        body = body.replace(_TICKER_MD_SECTION_LEGACY, TICKER_MD_SECTION)
+        body = body.replace(_TICKER_MD_COMMENT, _TICKER_MD_COMMENT + "\n" + entry)
         md_path.write_text(body, encoding="utf-8")
+        return
+
+    content = md_path.read_text(encoding="utf-8")
+
+    # 중복 방지: 같은 날짜 이미 있으면 스킵
+    try:
+        from datetime import datetime as _dt
+        date_display_check = _dt.strptime(date_key, "%Y-%m-%d").strftime("%y/%m/%d")
+    except Exception:
+        date_display_check = date_key
+
+    if date_display_check and date_display_check in content:
+        return
+
+    # 구버전 섹션명을 신규로 마이그레이션
+    if _TICKER_MD_SECTION_LEGACY in content and TICKER_MD_SECTION not in content:
+        content = content.replace(_TICKER_MD_SECTION_LEGACY, TICKER_MD_SECTION)
+
+    if TICKER_MD_SECTION in content:
+        # 섹션 바로 뒤(첫 줄)에 새 항목 삽입
+        idx = content.index(TICKER_MD_SECTION) + len(TICKER_MD_SECTION)
+        content = content[:idx] + "\n" + entry + content[idx:]
     else:
-        content = md_path.read_text(encoding="utf-8")
-        if f"### {when}" in content:
-            return  # 이미 오늘 항목 있음
-        if TICKER_MD_SECTION in content:
-            idx = content.index(TICKER_MD_SECTION) + len(TICKER_MD_SECTION)
-            content = content[:idx] + entry + content[idx:]
-        else:
-            content += f"\n{TICKER_MD_SECTION}\n{_TICKER_MD_COMMENT}" + entry
-        md_path.write_text(content, encoding="utf-8")
+        content += f"\n{TICKER_MD_SECTION}\n{_TICKER_MD_COMMENT}\n" + entry
+
+    md_path.write_text(content, encoding="utf-8")
 
 
 def touch_ticker(
@@ -335,14 +373,15 @@ def touch_ticker(
         report.ticker_created.append(name)
     report.ticker_touched.append(name)
 
-    # per-ticker MD 자동 기록 (screener 이벤트만, dry_run 제외)
-    if kind == "screener" and screener_row and not dry_run:
+    # per-ticker MD 자동 기록 (screener / stage2 이벤트, dry_run 제외)
+    if kind in ("screener", "stage2") and screener_row and not dry_run:
         try:
             ensure_ticker_md(
                 name=name,
                 ticker=data.get("ticker", ""),
                 themes=data.get("themes", []),
                 screener_row=screener_row,
+                kind=kind,
             )
         except Exception as _e:
             report.warnings.append(f"ensure_ticker_md({name}) 실패: {_e}")
@@ -431,6 +470,61 @@ def sync_theme_briefing(report: SyncReport, dry_run: bool) -> None:
 REVIEW_STATUS_PAT = re.compile(r"(?:^|\n)\s*-?\s*\*{0,2}Decision\*{0,2}\s*:\s*\*{0,2}\s*([A-Za-z_ ]+)")
 REVIEW_THESIS_PAT = re.compile(r"(?:^|\n)#+\s*Thesis\s*\n(.+?)(?:\n#+\s|\Z)", re.DOTALL)
 REVIEW_INVALID_PAT = re.compile(r"(?:^|\n)#+\s*Invalidat(?:ion|ors?)\s*\n(.+?)(?:\n#+\s|\Z)", re.DOTALL)
+
+
+def sync_stage2(report: SyncReport, dry_run: bool) -> None:
+    """stage2_geek_filtered.json → 각 종목 .md 수급 특징주 섹션에 한 줄 기록."""
+    geek_path = ALERTS_DIR / "stage2_geek_filtered.json"
+    if not geek_path.exists():
+        return
+    try:
+        rows = json.loads(geek_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        report.warnings.append(f"stage2_geek_filtered.json 읽기 실패: {e}")
+        return
+
+    if not isinstance(rows, list):
+        return
+
+    scr_date = TODAY_S
+    for row in rows:
+        code = str(row.get("ticker") or "").strip()
+        nm   = row.get("name") or ""
+        if not nm and code:
+            # .state에서 이름 역조회
+            for sf in TICKERS_STATE.glob("*.yaml"):
+                try:
+                    sd = __import__("yaml").safe_load(sf.read_text(encoding="utf-8")) or {}
+                    if str(sd.get("ticker", "")) == code:
+                        nm = sd.get("name", "")
+                        break
+                except Exception:
+                    pass
+        if not nm:
+            continue
+
+        screener_row = {
+            "date":       scr_date,
+            "change":     row.get("change", 0),
+            "vol_ratio":  row.get("vol_ratio", 0),
+            "rs_pct":     row.get("rs_pct", 0),
+            "turtle":     row.get("turtle", ""),
+            "foreign_5d": row.get("foreign_5d", 0),
+            "tag":        row.get("tag", ""),
+        }
+        extra = {"_screener_row": screener_row}
+        if code:
+            extra["ticker"] = code
+
+        touch_ticker(
+            nm,
+            kind="stage2",
+            ref="alerts/stage2_geek_filtered.json",
+            when=scr_date,
+            report=report,
+            dry_run=dry_run,
+            extra=extra,
+        )
 
 
 def sync_reviews(report: SyncReport, dry_run: bool) -> None:
@@ -645,7 +739,7 @@ def main() -> int:
     print(f"{'[DRY] ' if dry_run else ''}entity_syncer 시작 — {TODAY_S}")
     print("-" * 60)
 
-    print("(a) theme_briefing / screener → tickers/.state")
+    print("(a) theme_briefing / screener → tickers/.state + .md 수급 특징주")
     sync_theme_briefing(report, dry_run)
 
     print("(b) reviews → tickers/.state")

@@ -1,0 +1,65 @@
+# entity_syncer 리포트 — 2026-04-20
+
+- 터치한 ticker: 77개
+- 신규 ticker .state: 51개
+- event phase 전이: 4건
+- 터치한 active theme: 6개
+
+## 신규 ticker
+- PS일렉트로닉스
+- 아주IB투자
+- 브이엠
+- 샘씨엔에스
+- 한화엔진
+- 에스디바이오센서
+- HD현대마린엔진
+- 씨젠
+- 신흥에스이씨
+- 코세스
+- PKC
+- 케이프
+- 에이치엠넥스
+- 신풍제약
+- 제넥신
+- 에이치브이엠
+- 프로텍
+- 엘앤에프
+- 세진중공업
+- 성일하이텍
+- 파이버프로
+- 삼성SDI
+- 오킨스전자
+- 세아베스틸지주
+- STX엔진
+- 강원에너지
+- 아이씨티케이
+- RF머트리얼즈
+- 삼성전기우
+- SK스퀘어
+- 일진전기
+- LS
+- 한국금융지주
+- 케이씨텍
+- 한화리츠
+- JB금융지주
+- 영풍
+- iM금융지주
+- HD현대일렉트릭
+- 하나금융지주
+- 우리금융지주
+- KB금융
+- BNK금융지주
+- 큐로셀
+- 신한지주
+- 더존비즈온
+- 나노신소재
+- KT&G
+- 에스원
+- 에코프로머티
+- POSCO홀딩스
+
+## 이벤트 전이
+- 2026-03-17_Hugel_HansBiomed_ECM: active → fading
+- 2026-03-18_Lumentum_OFC_Call: active → fading
+- 2026-03-19_CMTX_IR_Meeting_Part2: active → fading
+- 2026-03-19_SCD_Insulin_IND: active → fading

@@ -1,7 +1,7 @@
 event_id: 2026-03-19_CMTX_IR_Meeting_Part2
 event_date: 2026-03-19
-phase: active
-last_reviewed: '2026-04-16'
+phase: fading
+last_reviewed: '2026-04-20'
 expires_on: '2026-09-15'
 linked_tickers_seen:
 - ticker: 씨엠티엑스

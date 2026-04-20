@@ -1,0 +1,13 @@
+appearances: []
+catalysts_pending: []
+invalidation: ''
+last_briefed: ''
+last_seen: ''
+name: 삼화콘덴서
+status: monitoring
+status_since: '2026-04-20'
+themes:
+- MLCC
+- 수동소자
+thesis: ''
+ticker: 001820

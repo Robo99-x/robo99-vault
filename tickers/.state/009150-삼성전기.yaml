@@ -1,0 +1,16 @@
+appearances:
+- date: '2026-04-20'
+  kind: stage2
+  ref: alerts/stage2_geek_filtered.json
+catalysts_pending: []
+invalidation: ''
+last_briefed: ''
+last_seen: '2026-04-20'
+name: 삼성전기
+status: monitoring
+status_since: '2026-04-20'
+themes:
+- MLCC
+- 수동소자
+thesis: ''
+ticker: 009150

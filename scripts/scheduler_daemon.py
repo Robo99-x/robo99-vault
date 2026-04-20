@@ -331,15 +331,45 @@ def job_theme_screener():
     if not ok:
         log.error("theme_volume_screener.py 실패 — 스킵")
         return
+
+    # 스크리너 결과 0건이면 Claude 호출 불필요 — 타임아웃 낭비 방지
+    screener_path = BASE / "alerts" / "theme_screener.json"
+    try:
+        screener_data = json.loads(screener_path.read_text(encoding="utf-8"))
+        stock_count = len(screener_data.get("stocks", []))
+        if stock_count == 0:
+            log.info("theme_screener.json stocks 0건 — 특징주 없음, Claude 스킵")
+            return
+        log.info(f"theme_screener.json stocks {stock_count}건 — Claude 분류 시작")
+    except Exception as e:
+        log.warning(f"theme_screener.json 읽기 실패 ({e}) — Claude 스킵")
+        return
+
     vw = _get_vault_writer()
+
+    # is_reappearance 판단을 위해 .state 종목명 목록만 미리 추출 (파일 107개 glob 대신 names만 전달)
+    state_names: list[str] = []
+    state_dir = BASE / "tickers" / ".state"
+    if state_dir.exists():
+        import yaml as _yaml
+        for sf in state_dir.glob("*.yaml"):
+            try:
+                sd = _yaml.safe_load(sf.read_text(encoding="utf-8")) or {}
+                n = sd.get("name") or sf.stem.split("-", 1)[-1]
+                if sd.get("last_seen"):
+                    state_names.append(n)
+            except Exception:
+                pass
+    state_names_str = ", ".join(state_names) if state_names else "없음"
 
     stdout = run_claude(
         f"Read ~/CLAUDE.md. "
         f"Read ~/robo99_hq/alerts/theme_screener.json. "
         f"Today is {today}. "
-        f"=== 사전 컨텍스트 읽기 === "
-        f"Glob ~/robo99_hq/themes/active/*.md and read their frontmatter to know which themes are already tracked. "
-        f"Glob ~/robo99_hq/tickers/.state/*.yaml — note which stocks already have entity state (재등장 판단용). "
+        f"=== 재등장 종목 참고 (last_seen 있는 종목들) === "
+        f"{state_names_str} "
+        f"=== 추적 중인 테마 참고 === "
+        f"Read ~/robo99_hq/alerts/cache/theme_map.json for theme-ticker mapping. "
         f"=== 출력 형식: 반드시 JSON 만 출력 === "
         f"DO NOT write any files. DO NOT send Telegram. DO NOT output markdown. "
         f"Output ONLY a single JSON object to stdout with this exact structure: "

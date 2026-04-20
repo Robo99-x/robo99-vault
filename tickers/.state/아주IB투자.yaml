@@ -1,0 +1,14 @@
+ticker: ''
+name: 아주IB투자
+status: monitoring
+status_since: '2026-04-17'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-17'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-17.md
+last_seen: '2026-04-17'
+last_briefed: '2026-04-17'

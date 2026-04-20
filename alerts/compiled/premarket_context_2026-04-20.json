@@ -1,0 +1,528 @@
+{
+  "compiled_at": "2026-04-20T17:55:24.923944",
+  "run_id": "ctx_2026-04-20_57ba0e",
+  "today": "2026-04-20",
+  "prev_briefing_date": "2026-04-17",
+  "prev_briefing_summary": "# 장전 브리핑 — 2026-04-17\n\n## 매크로 컨텍스트\n\n시장 스냅샷 데이터 수집 전체 실패(yfinance 오류) — 어제(04-16) 국내는 양자보안·전고체·전선·갤럭시부품 테마 주도 강세; 미-중 관세 불확실성 지속 속 변동성 경계 유지\n\n---\n\n## Section 1 — ACTIVE 워치리스트 델타\n\n### [B] SCHEDULED TODAY — [[삼성전자]]\n\n- next_review 2026-04-15 도래 → 2일 초과 미점검; 1Q26 잠정실적 시즌 돌입, DS부문 HBM3E 수율 및 파운드리 가동률 업데이트 필요\n- 테마: 반도체, 메모리\n- 체크포인트: 1Q26 잠정실적 발표일 전후 CIO 브리핑 트리거\n\n### [B] SCHEDULED TODAY — [[SK하이닉스]]\n\n- next_review 2026-04-15 도래 → 2일 초과 미점검; HBM4 양산 타임라인·엔비디아 공급 비중 최신화 필요\n- 테마: 반도체, HBM\n- 체크포인트: 1Q26 잠정실적 발표 즉시 CIO 브리핑\n\n### [C] SCHEDULED TODAY — [[088800]]\n\n- next_review 2026-04-13 도래 → 4일 초과 미점검; 워치리스트 정리 또는 CIO 재검토 필요\n- 체크포인트: 워치리스트 유지 여부 판단 후 미유지 시 state 파일 정리\n\n### 변동없음\n\n[[삼성전기]] · [[삼화콘덴서]] · [[LITE]] · [[NVDA]] · [[씨엠티엑스]] · [[한스바이오메드]] · [[파마리서치]] · [[삼천당제약]] · [[LS전선]] · [[가온전선]] · [[GLW]] …(생략)",
+  "watchlist_active": [
+    {
+      "ticker_name": "삼성전기",
+      "ticker_code": "009150",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "MLCC",
+        "수동소자"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "삼화콘덴서",
+      "ticker_code": "001820",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "MLCC",
+        "수동소자"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "LITE",
+      "ticker_code": "LITE",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "CPO",
+        "광통신"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "NVDA",
+      "ticker_code": "NVDA",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "CPO",
+        "AI반도체"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "씨엠티엑스",
+      "ticker_code": "060870",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "반도체 소재/부품"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "한스바이오메드",
+      "ticker_code": "042520",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "스킨부스터"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "파마리서치",
+      "ticker_code": "214450",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "스킨부스터"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "삼천당제약",
+      "ticker_code": "000250",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "제약바이오"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "LS전선",
+      "ticker_code": "229640",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "광섬유/통신인프라"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "가온전선",
+      "ticker_code": "000500",
+      "status": "monitoring",
+      "status_since": "2026-04-16",
+      "thesis": "",
+      "themes": [
+        "전선",
+        "전력설비"
+      ],
+      "last_briefed": "2026-04-16",
+      "days_since_briefed": 4,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "2026-04-16",
+      "in_state": true
+    },
+    {
+      "ticker_name": "GLW",
+      "ticker_code": "GLW",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "광섬유/통신인프라"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    }
+  ],
+  "watchlist_monitoring": [
+    {
+      "ticker_name": "효성티앤씨",
+      "ticker_code": "298020",
+      "status": "monitoring",
+      "status_since": "2026-04-09",
+      "thesis": "",
+      "themes": [
+        "타이어",
+        "밸류업"
+      ],
+      "last_briefed": "2026-04-09",
+      "days_since_briefed": 11,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "2026-04-09",
+      "in_state": true
+    },
+    {
+      "ticker_name": "두산에너빌리티",
+      "ticker_code": "034020",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "원자력"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "CCJ",
+      "ticker_code": "CCJ",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "원자력",
+        "우라늄"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "DL이앤씨",
+      "ticker_code": "375500",
+      "status": "monitoring",
+      "status_since": "2026-04-08",
+      "thesis": "",
+      "themes": [
+        "건설 대표주",
+        "GTX"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "2026-04-08",
+      "in_state": true
+    },
+    {
+      "ticker_name": "AT&T",
+      "ticker_code": "T",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "광섬유/통신인프라"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "현대로템",
+      "ticker_code": "064350",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "인도인프라",
+        "방산"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    },
+    {
+      "ticker_name": "LS ELECTRIC",
+      "ticker_code": "010120",
+      "status": "monitoring",
+      "status_since": "2026-04-20",
+      "thesis": "",
+      "themes": [
+        "인도인프라",
+        "전력인프라"
+      ],
+      "last_briefed": "",
+      "days_since_briefed": null,
+      "is_review_due": false,
+      "next_review": "",
+      "catalysts_pending": [],
+      "invalidation": "",
+      "last_seen": "",
+      "in_state": true
+    }
+  ],
+  "active_events": [
+    {
+      "event_id": "2026-03-17_Hugel_HansBiomed_ECM",
+      "phase": "active",
+      "event_date": "2026-03-17",
+      "expires_on": "2026-09-13",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "휴젤",
+        "한스바이오메드",
+        "파마리서치",
+        "엘앤씨바이오"
+      ]
+    },
+    {
+      "event_id": "2026-03-17_Murata_MLCC_Price_Hike",
+      "phase": "active",
+      "event_date": "2026-03-17",
+      "expires_on": "2026-09-13",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "삼성전기",
+        "삼화콘덴서",
+        "아모텍"
+      ]
+    },
+    {
+      "event_id": "2026-03-18_Lumentum_OFC_Call",
+      "phase": "active",
+      "event_date": "2026-03-18",
+      "expires_on": "2026-09-14",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "LITE",
+        "NVDA"
+      ]
+    },
+    {
+      "event_id": "2026-03-18_Lycra_Bankruptcy",
+      "phase": "active",
+      "event_date": "2026-03-18",
+      "expires_on": "2026-09-14",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "효성티앤씨"
+      ]
+    },
+    {
+      "event_id": "2026-03-19_CMTX_IR_Meeting",
+      "phase": "active",
+      "event_date": "2026-03-19",
+      "expires_on": "2026-09-15",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "씨엠티엑스",
+        "월덱스",
+        "하나머티리얼즈",
+        "티씨케이"
+      ]
+    },
+    {
+      "event_id": "2026-03-19_CMTX_IR_Meeting_Part2",
+      "phase": "active",
+      "event_date": "2026-03-19",
+      "expires_on": "2026-09-15",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "씨엠티엑스",
+        "TSMC",
+        "마이크론",
+        "삼성전자"
+      ]
+    },
+    {
+      "event_id": "2026-03-19_SCD_Insulin_IND",
+      "phase": "active",
+      "event_date": "2026-03-19",
+      "expires_on": "2026-09-15",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "삼천당제약 (000250)"
+      ]
+    },
+    {
+      "event_id": "2026-03-24_Nucleareurope_EU_Action_Plan",
+      "phase": "active",
+      "event_date": "2026-03-24",
+      "expires_on": "2026-09-20",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "두산에너빌리티",
+        "한전기술",
+        "한전KPS",
+        "CEG",
+        "CCJ"
+      ]
+    },
+    {
+      "event_id": "2026-03-25_DL이앤씨_SMR_엑스에너지_설계계약",
+      "phase": "active",
+      "event_date": "2026-03-25",
+      "expires_on": "2026-09-21",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "DL이앤씨(375500)"
+      ]
+    },
+    {
+      "event_id": "2026-03-27_FCC_구리통신망_광섬유교체_규제폐지",
+      "phase": "active",
+      "event_date": "2026-03-27",
+      "expires_on": "2026-09-23",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "LS전선",
+        "가온전선",
+        "고려아연",
+        "풍산",
+        "Corning(GLW)",
+        "AT&T(T)",
+        "Verizon(VZ)"
+      ]
+    },
+    {
+      "event_id": "2026-03-30_삼천당제약_세마글루타이드_미국라이센스",
+      "phase": "active",
+      "event_date": "2026-03-30",
+      "expires_on": "2026-09-26",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "삼천당제약(000250)"
+      ]
+    },
+    {
+      "event_id": "2026-04-01_AT&T_FirstNet_20억달러투자",
+      "phase": "active",
+      "event_date": "2026-04-01",
+      "expires_on": "2026-09-28",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "AT&T(T)"
+      ]
+    },
+    {
+      "event_id": "2026-04-06_India_Railway_Signal_Comm_Infra",
+      "phase": "active",
+      "event_date": "2026-04-06",
+      "expires_on": "2026-10-03",
+      "last_catalyst": "",
+      "last_reviewed": "2026-04-16",
+      "linked_tickers": [
+        "현대로템(064350)",
+        "LS ELECTRIC(010120)",
+        "우진산전(105620)"
+      ]
+    }
+  ],
+  "screener_top": [],
+  "compile_warnings": [
+    "ZERO_PARSE: theme_screener.json stocks 0건"
+  ],
+  "stats": {
+    "ticker_states_loaded": 107,
+    "active_watchlist_count": 11,
+    "monitoring_count": 7,
+    "active_events_count": 13,
+    "screener_top_count": 0,
+    "unresolved_aliases": 0,
+    "zero_parse_sources": 1
+  },
+  "est_tokens": 3331
+}
