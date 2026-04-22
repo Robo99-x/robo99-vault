@@ -7,10 +7,30 @@
 """
 
 import json
+import signal
 import time
 from datetime import datetime
 from pathlib import Path
 import yfinance as yf
+
+
+class _AlarmTimeout:
+    """signal.alarm 기반 타임아웃 컨텍스트 매니저 (UNIX only)."""
+    def __init__(self, seconds: int):
+        self.seconds = seconds
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self._raise)
+        signal.alarm(self.seconds)
+        return self
+
+    def __exit__(self, *_):
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, signal.SIG_DFL)
+
+    @staticmethod
+    def _raise(sig, frame):
+        raise TimeoutError("yfinance batch 타임아웃")
 
 OUT = Path(__file__).resolve().parent.parent / "alerts"
 
@@ -74,14 +94,21 @@ def fetch_all() -> dict[str, dict]:
     result = {}
     data = None
 
-    # 1단계: batch download (재시도 포함)
+    # 1단계: batch download (재시도 포함, 시도당 90초 제한)
+    BATCH_TIMEOUT = 90
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            print(f"  batch download 시도 {attempt}/{MAX_RETRIES} ({len(all_tickers)}개 심볼)...")
-            data = yf.download(all_tickers, period="2d", group_by="ticker", threads=True, progress=False)
+            print(f"  batch download 시도 {attempt}/{MAX_RETRIES} ({len(all_tickers)}개 심볼, timeout={BATCH_TIMEOUT}s)...")
+            with _AlarmTimeout(BATCH_TIMEOUT):
+                data = yf.download(all_tickers, period="2d", group_by="ticker", threads=True, progress=False)
             if data is not None and not data.empty:
                 print(f"  batch 성공 ✓")
                 break
+        except TimeoutError as e:
+            print(f"  batch 시도 {attempt} 타임아웃: {e}")
+            if attempt < MAX_RETRIES:
+                time.sleep(RETRY_DELAY)
+            data = None
         except Exception as e:
             print(f"  batch 시도 {attempt} 실패: {e}")
             if attempt < MAX_RETRIES:

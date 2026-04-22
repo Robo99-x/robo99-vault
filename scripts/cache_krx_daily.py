@@ -108,8 +108,70 @@ def nearest_bday(max_lookback=7):
     return None, None, None
 
 
+def _get_missing_dates(conn, max_lookback: int = 10) -> list[str]:
+    """DB max_date 이후 오늘까지 누락된 거래일 목록 반환 (pykrx 확인 기반)."""
+    row = conn.execute("SELECT MAX(date) FROM ohlcv").fetchone()
+    db_max = row[0] if row and row[0] else "20000101"
+
+    today = datetime.now()
+    missing = []
+    for i in range(max_lookback, -1, -1):
+        d = (today - timedelta(days=i)).strftime("%Y%m%d")
+        if d <= db_max:
+            continue
+        if d > today.strftime("%Y%m%d"):
+            continue
+        # 주말 제외
+        dt = datetime.strptime(d, "%Y%m%d")
+        if dt.weekday() >= 5:
+            continue
+        missing.append(d)
+    return missing
+
+
+def _cache_date(conn, date: str) -> bool:
+    """특정 날짜의 KRX 데이터를 DB에 삽입. 성공 시 True."""
+    try:
+        df = stock.get_market_ohlcv_by_ticker(date, market="ALL")
+        if df is None or df.empty:
+            return False
+        if not set(["시가", "고가", "저가", "종가"]).issubset(df.columns):
+            return False
+        df = df.reset_index().rename(columns={
+            "티커": "ticker",
+            "시가": "open",
+            "고가": "high",
+            "저가": "low",
+            "종가": "close",
+            "거래량": "volume",
+        })
+        df["date"] = date
+        rows = df[["date", "ticker", "open", "high", "low", "close", "volume"]].values.tolist()
+        conn.executemany(
+            "INSERT OR REPLACE INTO ohlcv(date,ticker,open,high,low,close,volume) VALUES(?,?,?,?,?,?,?)",
+            rows,
+        )
+        conn.commit()
+        print(f"cached {len(rows)} rows for {date} (source=pykrx)")
+        return True
+    except Exception:
+        _log_err(f"_cache_date failed for {date}: {traceback.format_exc().strip()}")
+        return False
+
+
 def main():
     conn = ensure_db()
+
+    # catch-up: DB max_date 이후 누락된 거래일 모두 보충
+    missing = _get_missing_dates(conn)
+    if missing:
+        for d in missing:
+            ok = _cache_date(conn, d)
+            if not ok:
+                print(f"ERROR: cannot fetch KRX daily data for {d}")
+        return
+
+    # 누락일 없으면 오늘(또는 최근 거래일) 캐시
     date, df, source = nearest_bday()
     if df is None:
         print("ERROR: cannot fetch KRX daily data")
@@ -132,7 +194,6 @@ def main():
         print("ERROR: unknown data source")
         return
 
-    # bulk insert/replace
     rows = df[["date", "ticker", "open", "high", "low", "close", "volume"]].values.tolist()
     conn.executemany(
         "INSERT OR REPLACE INTO ohlcv(date,ticker,open,high,low,close,volume) VALUES(?,?,?,?,?,?,?)",

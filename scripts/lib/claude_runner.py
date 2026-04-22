@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 import re
+import socket
 import subprocess
 import time
 
@@ -24,6 +25,18 @@ from lib import telegram
 from lib.config import BASE, CLAUDE_TIMEOUT
 
 log = logging.getLogger("claude_runner")
+
+
+def _is_network_up() -> bool:
+    """5초 소켓 체크로 인터넷 연결 여부 확인."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(5)
+        s.connect(("8.8.8.8", 53))
+        s.close()
+        return True
+    except Exception:
+        return False
 
 
 def run(
@@ -48,6 +61,14 @@ def run(
         성공 시 stdout 텍스트, 실패 시 None
     """
     work_dir = cwd or str(BASE)
+
+    if not _is_network_up():
+        log.error(f"[{task_name}] 네트워크 오프라인 — Claude 호출 스킵")
+        telegram.send_alert(
+            f"네트워크 오프라인:{task_name}",
+            "인터넷 연결 없음. Claude 호출 건너뜀.",
+        )
+        return None
 
     for attempt in range(1, retries + 1):
         log.info(f"[{task_name}] Claude 시도 {attempt}/{retries}")

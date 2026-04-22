@@ -64,7 +64,7 @@ SCRIPT_TIMEOUTS = {
     "rs_ranking.py": 600,             # RS 랭킹: 10분 (종목 600개 순차 요청)
     "geek_filter.py": 120,            # 필터링: 2분
     "stage2_briefing.py": 120,        # 브리핑 생성: 2분
-    "vcp_scanner.py": 180,            # VCP 스캔: 3분
+    "vcp_scanner.py": 300,            # VCP 스캔: 5분 (500종목 + pykrx 네트워크)
     "theme_volume_screener.py": 120,  # 테마 스크리너: 2분
 }
 DEFAULT_TIMEOUT = 300
