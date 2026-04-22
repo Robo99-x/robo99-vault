@@ -1,0 +1,19 @@
+ticker: '322000'
+name: HD현대에너지솔루션
+status: monitoring
+status_since: '2026-04-22'
+thesis: ''
+themes:
+- 전력저장장치
+- 태양광에너지
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-22'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-22.md
+- date: '2026-04-22'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-22'
+last_briefed: '2026-04-22'

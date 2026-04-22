@@ -1,0 +1,21 @@
+ticker: '170920'
+name: 엘티씨
+status: monitoring
+status_since: '2026-04-22'
+thesis: ''
+themes:
+- 반도체 재료
+- 부품
+- 수소에너지
+- 연료전지 등)
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-22'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-22.md
+- date: '2026-04-22'
+  kind: screener
+  ref: alerts/theme_screener.json
+last_seen: '2026-04-22'
+last_briefed: '2026-04-22'

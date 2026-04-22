@@ -669,6 +669,130 @@ def sync_events(report: SyncReport, dry_run: bool) -> None:
 # (d) themes/active .state
 # ---------------------------------------------------------------------------
 
+def _parse_briefing_themes(text: str) -> list[dict]:
+    """theme_briefing_*.md 본문에서 테마 섹션 파싱.
+    반환: [{"name": str, "catalyst": str, "stocks": [str], "lines": [str]}]
+    """
+    # ━━━ 테마명 ━━━ 패턴 (📌 기타 제외)
+    section_pat = re.compile(r"━━━\s+(.+?)\s+━━━")
+    stock_pat = re.compile(r"•\s+\[\[([^\]]+)\]\]([^\n]*)")
+
+    results = []
+    sections = section_pat.split(text)
+    # sections: [pre, name1, body1, name2, body2, ...]
+    for i in range(1, len(sections), 2):
+        name = sections[i].strip()
+        body = sections[i + 1] if i + 1 < len(sections) else ""
+        if "기타" in name or "단독" in name:
+            continue
+        lines = [l.strip() for l in body.strip().splitlines() if l.strip()]
+        catalyst = next((l for l in lines if not l.startswith("•") and not l.startswith("#")), "")
+        stocks = []
+        stock_lines = []
+        for l in lines:
+            m = stock_pat.match(l)
+            if m:
+                stocks.append(m.group(1).strip())
+                stock_lines.append(l)
+        results.append({"name": name, "catalyst": catalyst, "stocks": stocks, "stock_lines": stock_lines})
+    return results
+
+
+def _build_theme_md(name: str, catalyst: str, stocks: list[str], stock_lines: list[str], date_str: str) -> str:
+    frontmatter = f"""---
+theme: "{name}"
+phase: active
+created: {date_str}
+last_updated: {date_str}
+status_note: "{catalyst[:80].replace('"', "'")}"
+---"""
+    winners = "\n".join(f"- [[{s}]]" for s in stocks) if stocks else "<!-- 수동 입력 -->"
+    history_row = f"| {date_str} | {len(stocks)} | {catalyst[:60]} |"
+    return f"""{frontmatter}
+
+# [Theme] {name}
+
+## 1. 핵심 동인 (Core Drivers)
+- {catalyst}
+
+## 2. 관련 이벤트 (Linked Events)
+<!-- [[events/날짜_제목]] -->
+
+## 3. 밸류체인 및 수혜/피해 종목 (Value Chain)
+
+### 직접 수혜 (Direct Winners)
+{winners}
+
+### 간접 수혜 (Second Order Winners)
+<!-- 수동 입력 -->
+
+### 리스크 (Losers)
+<!-- 수동 입력 -->
+
+## 4. 모니터링 지표 (Key Metrics to Track)
+<!-- 수동 입력 -->
+
+## 5. 리스크 요인 / 무효화 조건 (Risks / Invalidators)
+<!-- 수동 입력 -->
+
+## 등장 이력
+| 날짜 | 종목수 | 주요 촉매 |
+|------|--------|---------|
+{history_row}
+"""
+
+
+def _append_theme_history(md_path: Path, date_str: str, stocks: list[str], catalyst: str, dry_run: bool) -> bool:
+    """기존 테마 파일에 등장 이력 1행 추가. 이미 해당 날짜 있으면 스킵."""
+    text = md_path.read_text(encoding="utf-8")
+    if date_str in text:
+        return False
+    new_row = f"| {date_str} | {len(stocks)} | {catalyst[:60]} |"
+    if "## 등장 이력" in text:
+        text = text.rstrip() + f"\n{new_row}\n"
+    else:
+        text = text.rstrip() + f"\n\n## 등장 이력\n| 날짜 | 종목수 | 주요 촉매 |\n|------|--------|------|\n{new_row}\n"
+    # last_updated 갱신
+    text = re.sub(r"last_updated: [\d-]+", f"last_updated: {date_str}", text)
+    if not dry_run:
+        md_path.write_text(text, encoding="utf-8")
+    return True
+
+
+def sync_theme_files(report: SyncReport, dry_run: bool) -> None:
+    """theme_briefing_*.md → themes/active/테마명.md 자동 생성·갱신."""
+    briefing = ALERTS_DIR / f"theme_briefing_{TODAY_S}.md"
+    if not briefing.exists():
+        cands = sorted(ALERTS_DIR.glob("theme_briefing_*.md"))
+        if not cands:
+            return
+        briefing = cands[-1]
+
+    m = re.search(r"theme_briefing_(\d{4}-\d{2}-\d{2})", briefing.name)
+    when = m.group(1) if m else TODAY_S
+    text = briefing.read_text(encoding="utf-8")
+    themes = _parse_briefing_themes(text)
+
+    created, updated = 0, 0
+    for t in themes:
+        name, catalyst, stocks = t["name"], t["catalyst"], t["stocks"]
+        safe_name = name.replace("/", "·").replace(":", "-")
+        md_path = THEMES_ACTIVE_DIR / f"{safe_name}.md"
+        if not md_path.exists():
+            content = _build_theme_md(name, catalyst, stocks, t["stock_lines"], when)
+            if not dry_run:
+                md_path.write_text(content, encoding="utf-8")
+            report.theme_touched.append(name)
+            created += 1
+        else:
+            changed = _append_theme_history(md_path, when, stocks, catalyst, dry_run)
+            if changed:
+                report.theme_touched.append(name)
+                updated += 1
+
+    print(f"   themes/active 신규 {created}개 / 이력 추가 {updated}개")
+
+
 def sync_active_themes(report: SyncReport, dry_run: bool) -> None:
     for md in sorted(THEMES_ACTIVE_DIR.glob("*.md")):
         if md.name.startswith("_"):
@@ -750,6 +874,9 @@ def main() -> int:
 
     print("(d) themes/active → themes/active/.state")
     sync_active_themes(report, dry_run)
+
+    print("(e) theme_briefing → themes/active/*.md 자동 생성·갱신")
+    sync_theme_files(report, dry_run)
 
     rp = write_report(report, dry_run)
     print("-" * 60)

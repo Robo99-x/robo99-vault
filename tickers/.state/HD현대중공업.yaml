@@ -1,0 +1,14 @@
+ticker: ''
+name: HD현대중공업
+status: monitoring
+status_since: '2026-04-22'
+thesis: ''
+themes: []
+catalysts_pending: []
+invalidation: ''
+appearances:
+- date: '2026-04-22'
+  kind: theme_briefing
+  ref: alerts/theme_briefing_2026-04-22.md
+last_seen: '2026-04-22'
+last_briefed: '2026-04-22'
