@@ -1,0 +1,130 @@
+{
+  "timestamp": "2026-04-24T07:12:15.939573",
+  "date": "2026-04-24",
+  "indices": {
+    "S&P 500": {
+      "symbol": "^GSPC",
+      "error": "데이터 수집 실패"
+    },
+    "나스닥": {
+      "symbol": "^IXIC",
+      "error": "데이터 수집 실패"
+    },
+    "다우": {
+      "symbol": "^DJI",
+      "error": "데이터 수집 실패"
+    },
+    "VIX": {
+      "symbol": "^VIX",
+      "error": "데이터 수집 실패"
+    }
+  },
+  "macro": {
+    "10Y": {
+      "symbol": "^TNX",
+      "error": "데이터 수집 실패"
+    },
+    "DXY": {
+      "symbol": "DX-Y.NYB",
+      "error": "데이터 수집 실패"
+    },
+    "WTI": {
+      "symbol": "CL=F",
+      "error": "데이터 수집 실패"
+    },
+    "USD/KRW": {
+      "symbol": "KRW=X",
+      "error": "데이터 수집 실패"
+    },
+    "USD/JPY": {
+      "symbol": "JPY=X",
+      "error": "데이터 수집 실패"
+    },
+    "금": {
+      "symbol": "GC=F",
+      "error": "데이터 수집 실패"
+    }
+  },
+  "sectors": {
+    "XLK": {
+      "symbol": "XLK",
+      "error": "데이터 수집 실패"
+    },
+    "XLF": {
+      "symbol": "XLF",
+      "error": "데이터 수집 실패"
+    },
+    "XLE": {
+      "symbol": "XLE",
+      "error": "데이터 수집 실패"
+    },
+    "XLV": {
+      "symbol": "XLV",
+      "error": "데이터 수집 실패"
+    },
+    "XLI": {
+      "symbol": "XLI",
+      "error": "데이터 수집 실패"
+    },
+    "XLRE": {
+      "symbol": "XLRE",
+      "error": "데이터 수집 실패"
+    },
+    "XLP": {
+      "symbol": "XLP",
+      "error": "데이터 수집 실패"
+    },
+    "XLC": {
+      "symbol": "XLC",
+      "error": "데이터 수집 실패"
+    }
+  },
+  "watchlist": {
+    "NVDA": {
+      "symbol": "NVDA",
+      "error": "데이터 수집 실패"
+    },
+    "AAPL": {
+      "symbol": "AAPL",
+      "error": "데이터 수집 실패"
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "error": "데이터 수집 실패"
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "error": "데이터 수집 실패"
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "error": "데이터 수집 실패"
+    },
+    "META": {
+      "symbol": "META",
+      "error": "데이터 수집 실패"
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "error": "데이터 수집 실패"
+    },
+    "TSM": {
+      "symbol": "TSM",
+      "error": "데이터 수집 실패"
+    },
+    "AVGO": {
+      "symbol": "AVGO",
+      "error": "데이터 수집 실패"
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "error": "데이터 수집 실패"
+    }
+  },
+  "earnings": [],
+  "_meta": {
+    "total_symbols": 28,
+    "success": 0,
+    "failed": 28
+  }
+}
