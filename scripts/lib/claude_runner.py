@@ -46,6 +46,7 @@ def run(
     timeout: int = CLAUDE_TIMEOUT,
     retry_delay: int = 10,
     cwd: str | None = None,
+    model: str | None = None,
 ) -> str | None:
     """Claude CLI 실행.
 
@@ -56,6 +57,7 @@ def run(
         timeout: 타임아웃 초 (기본 600)
         retry_delay: 재시도 간 대기 초 (기본 10)
         cwd: 작업 디렉토리 (기본 BASE)
+        model: 모델 지정 (예: "haiku", "sonnet"). None이면 기본 모델 사용.
 
     Returns:
         성공 시 stdout 텍스트, 실패 시 None
@@ -70,15 +72,20 @@ def run(
         )
         return None
 
+    cmd = ["claude", "--dangerously-skip-permissions", "-p", prompt]
+    if model:
+        cmd = ["claude", "--dangerously-skip-permissions", "--model", model, "-p", prompt]
+
     for attempt in range(1, retries + 1):
-        log.info(f"[{task_name}] Claude 시도 {attempt}/{retries}")
+        log.info(f"[{task_name}] Claude 시도 {attempt}/{retries}" + (f" (model={model})" if model else ""))
         try:
             result = subprocess.run(
-                ["claude", "--dangerously-skip-permissions", "-p", prompt],
+                cmd,
                 cwd=work_dir,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
+                stdin=subprocess.DEVNULL,  # rate limit 프롬프트에서 stdin 블로킹 방지
             )
 
             # Rate limit 감지 — 재시도 무의미, 즉시 중단

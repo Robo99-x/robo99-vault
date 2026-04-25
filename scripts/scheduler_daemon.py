@@ -180,14 +180,14 @@ def run_script(script_name: str, env_extra: dict = None, retries: int = 1, retry
     return False
 
 
-def run_claude(prompt: str, task_name: str) -> str | None:
+def run_claude(prompt: str, task_name: str, model: str | None = None) -> str | None:
     """Claude CLI 실행. lib.claude_runner 에 위임.
 
     lib.claude_runner 는 재시도 2회 + 진단 로그 (exit code, stdout 첫 200자, stderr 첫 300자)
     + 최종 실패 시 텔레그램 알림까지 포함.
     """
     from lib import claude_runner
-    return claude_runner.run(prompt, task_name, retries=2, timeout=600, retry_delay=10)
+    return claude_runner.run(prompt, task_name, retries=2, timeout=600, retry_delay=10, model=model)
 
 
 # ── 작업 정의 ─────────────────────────────────────────
@@ -205,6 +205,7 @@ def job_market_report():
         "Send it to Telegram chat_id 1883449676. "
         f"Save to ~/robo99_hq/alerts/report_{datetime.now(KST).strftime('%Y%m%d')}.md",
         "미장 마감 리포트",
+        model="haiku",
     )
 
 
@@ -306,6 +307,7 @@ def job_screening_morning():
         "Check if any ACTIVE watchlist tickers appear in screening results. "
         "If yes, send a brief note to Telegram chat_id 1883449676 highlighting the overlap.",
         "watchlist 교차 확인",
+        model="haiku",
     )
 
 
@@ -442,6 +444,45 @@ def job_weekly_upgrade():
         notify_failure("weekly_market_upgrade", "weekly_market_upgrade.py 실행 실패")
 
 
+def job_cio_exit_review():
+    """일요일 08:00 — CIO 주간 워치리스트 Exit Review"""
+    log.info("=== CIO Exit Review 시작 ===")
+    today = datetime.now(KST).strftime("%Y-%m-%d")
+    run_claude(
+        "Read ~/CLAUDE.md. "
+        "Read ~/robo99_hq/agents/investment/geek.md. "
+        "Read ~/robo99_hq/agents/investment/optimus.md. "
+        "Read ~/robo99_hq/watchlist.md. "
+        "Read ~/robo99_hq/alerts/rs_rankings.json if it exists. "
+        f"Today is {today}. "
+        "=== 역할: CIO 주간 Exit Review === "
+        "You are the CIO. Geek and Optimus both active. "
+        "For each ACTIVE ticker in watchlist.md, evaluate: "
+        "(1) Geek: RS ranking position — is it in the bottom 20%? For how many weeks? "
+        "(2) Geek: Has the invalidation condition been triggered? "
+        "(3) Optimus: Is the original thesis still intact? Any momentum signals fading? "
+        "(4) Is the next catalyst date already past with no outcome? "
+        "=== 출력 규칙 === "
+        "For each ticker output one of: "
+        "  FLAG_RESOLVED — clear invalidation (thesis broken, catalyst missed, RS bottom 20%+ 3 weeks). "
+        "  FLAG_REVIEW — thesis weakening but not broken. Needs attention. "
+        "  HOLD — thesis intact, monitoring continues. "
+        "Send summary to Telegram chat_id 1883449676. "
+        "Format: [주간 Exit Review {today}] "
+        "FLAG_RESOLVED: 종목명 — 이유 (watchlist.md RESOLVED 이동 권고) "
+        "FLAG_REVIEW: 종목명 — 이유 (형님 확인 필요) "
+        "HOLD: 종목 수만 요약. "
+        "Do NOT automatically modify watchlist.md — only flag for review.",
+        "CIO Exit Review",
+    )
+
+
+def job_weekly_calendar():
+    """일요일 08:30 — 주간 실적·경제지표 캘린더"""
+    log.info("=== 주간 캘린더 시작 ===")
+    run_script("weekly_calendar.py")
+
+
 def job_vault_push():
     """매일 23:10 — Obsidian 볼트 변경사항 GitHub 자동 push"""
     log.info("=== vault git push 시작 ===")
@@ -541,6 +582,14 @@ def main():
     sched.add_job(job_vault_push, CronTrigger(hour=23, minute=10, timezone=KST),
                   id="vault_push", max_instances=1, misfire_grace_time=300)
 
+    # 일요일 08:00 — CIO 주간 Exit Review
+    sched.add_job(job_cio_exit_review, CronTrigger(day_of_week="sun", hour=8, minute=0, timezone=KST),
+                  id="cio_exit_review", max_instances=1, misfire_grace_time=1800)
+
+    # 월요일 07:30 — 주간 실적·경제지표 캘린더
+    sched.add_job(job_weekly_calendar, CronTrigger(day_of_week="mon", hour=7, minute=30, timezone=KST),
+                  id="weekly_calendar", max_instances=1, misfire_grace_time=600)
+
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: (sched.shutdown(wait=False), sys.exit(0)))
 
@@ -552,6 +601,8 @@ def main():
     log.info("  평일 15:40 — 장마감 특징주 분류")
     log.info("  매일 23:00 — 시스템 자가 점검")
     log.info("  매일 23:10 — vault GitHub push")
+    log.info("  일요일 08:00 — CIO Exit Review")
+    log.info("  월요일 07:30 — 주간 캘린더")
 
     try:
         sched.start()
