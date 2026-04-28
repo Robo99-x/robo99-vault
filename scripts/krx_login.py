@@ -42,11 +42,11 @@ def login_krx() -> bool:
         original_get = webio.Get.read
 
         def patched_post(self, **params):
-            resp = session.post(self.url, headers=self.headers, data=params)
+            resp = session.post(self.url, headers=self.headers, data=params, timeout=30)
             return resp
 
         def patched_get(self, **params):
-            resp = session.get(self.url, headers=self.headers, params=params)
+            resp = session.get(self.url, headers=self.headers, params=params, timeout=30)
             return resp
 
         webio.Post.read = patched_post

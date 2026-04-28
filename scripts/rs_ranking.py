@@ -61,23 +61,27 @@ def _normalize_cap_columns(df):
 
 
 def _universe(date, market):
-    try:
-        tickers = stock.get_market_ticker_list(date, market=market)
-        caps = stock.get_market_cap_by_ticker(date)
-        caps = _normalize_cap_columns(caps)
-        # 시가총액 칼럼이 여전히 없으면 전일로 재시도
-        if "시가총액" not in caps.columns:
-            prev = (datetime.strptime(date, "%Y%m%d") - timedelta(days=1)).strftime("%Y%m%d")
-            caps = stock.get_market_cap_by_ticker(prev)
+    base_dt = datetime.strptime(date, "%Y%m%d")
+    for delta in range(5):
+        try_date = (base_dt - timedelta(days=delta)).strftime("%Y%m%d")
+        try:
+            tickers = stock.get_market_ticker_list(try_date, market=market)
+            caps = stock.get_market_cap_by_ticker(try_date)
             caps = _normalize_cap_columns(caps)
-        caps = caps.loc[caps.index.isin(tickers)].sort_values("시가총액", ascending=False)
-        if len(caps) >= TOP_N:
-            return caps.head(TOP_N).index.tolist()
-        # fallback to market cap threshold
-        return caps[caps["시가총액"] >= CAP_FALLBACK].index.tolist()
-    except Exception:
-        _log_err(f"pykrx universe error ({market}): {traceback.format_exc().strip()}")
-        return _fallback_tickers()
+            if "시가총액" not in caps.columns or caps.empty:
+                continue
+            caps = caps.loc[caps.index.isin(tickers)].sort_values("시가총액", ascending=False)
+            if delta > 0:
+                print(f"[{market}] ⚠️ universe fallback: {date} → {try_date}")
+                _log_err(f"universe fallback to {try_date} ({market})")
+            if len(caps) >= TOP_N:
+                return caps.head(TOP_N).index.tolist()
+            return caps[caps["시가총액"] >= CAP_FALLBACK].index.tolist()
+        except Exception:
+            _log_err(f"pykrx universe error ({market}, {try_date}): {traceback.format_exc().strip()}")
+            continue
+    _log_err(f"all universe attempts failed ({market}), using ticker_cache")
+    return _fallback_tickers()
 
 
 def _rs_scores(tickers, d0, d3m, d6m):
