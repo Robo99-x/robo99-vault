@@ -17,6 +17,7 @@ ALERTS = BASE / "alerts"
 CACHE_DIR = ALERTS / "cache"
 CACHE_DB = CACHE_DIR / "krx_cache.sqlite"
 STATE_DIR = BASE / "tickers" / ".state"
+INBOX = BASE / "00_inbox"
 SECRETS = BASE / "secrets"
 LOG_DIR = ALERTS  # scheduler.log, scheduler.err 등
 
