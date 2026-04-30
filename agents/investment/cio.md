@@ -34,6 +34,26 @@ CIO Score = (옵티머스 Conviction × 0.6) + (Geek RiskScore × 0.4)
 
 ---
 
+## Wiki 읽기 (CIO 활성화 즉시, 워커 호출 전 선행 필수)
+
+CIO 모드 활성화 시 브리핑 시작 전에 반드시 아래를 실행한다:
+
+1. `~/robo99_hq/workflows/cio_context_pack.md` 를 참조하여 context pack 생성
+2. 생성된 context pack을 Read
+3. context pack의 MATERIAL: YES 이벤트만 분석 근거로 사용
+4. MATERIAL: NO draft는 참고만 허용, 판단 근거 사용 금지
+
+**Fallback 순서 (ticker wiki 조회):**
+1. `20_wiki/tickers/{종목코드}.md` 시도
+2. 없으면 `tickers/{파일명}` 시도 (legacy)
+3. 둘 다 없으면 "wiki 페이지 없음 — 신규 종목" 표기
+
+**금지:**
+- draft 이벤트를 CIO Score 계산에 활용 금지
+- `20_wiki/` 없이 브리핑 시작 금지 (legacy만 있어도 context pack 생성)
+
+---
+
 ## 워커 호출 순서
 
 ```
