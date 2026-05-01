@@ -214,9 +214,9 @@ def load_screener_summary(top_n: int = 10) -> list[dict]:
 
         return [
             {
-                "ticker_code":      s.get("ticker_code", ""),
-                "ticker_name":      s.get("ticker_name", ""),
-                "change_pct":       s.get("change_pct", 0),
+                "ticker_code":      s.get("ticker_code") or s.get("ticker", ""),
+                "ticker_name":      s.get("ticker_name") or s.get("name", ""),
+                "change_pct":       s.get("change_pct") if s.get("change_pct") is not None else s.get("change", 0),
                 "vol_ratio":        s.get("vol_ratio", 0),
                 "trade_value_억":   s.get("trade_value_억", 0),
                 "market_cap_조":    s.get("market_cap_조", 0),
