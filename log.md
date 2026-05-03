@@ -14,3 +14,4 @@ ACTION 목록:
 - CIO_SESSION: CIO context pack 생성
 
 ---
+## [2026-05-03T08:05] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 파마리서치(214450) RS 2.3% / FLAG_REVIEW: 한스바이오메드(본계약 미확인), INTC(단기촉매 소멸) / HOLD: 10종목 / 상세: reviews/2026-05-03_주간ExitReview_CIO.md
