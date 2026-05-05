@@ -25,6 +25,7 @@ import signal
 import subprocess
 import sys
 import time
+import yaml
 from pathlib import Path
 from datetime import datetime
 
@@ -56,6 +57,27 @@ LOG_DIR = BASE / "alerts"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 KST = pytz.timezone("Asia/Seoul")
+
+# ── KRX 개장일 확인 ──────────────────────────────────
+def _load_holidays() -> set:
+    """holidays_2026.yaml → 휴장일 set (YYYY-MM-DD 문자열)."""
+    holiday_file = SCRIPTS / "holidays_2026.yaml"
+    try:
+        data = yaml.safe_load(holiday_file.read_text(encoding="utf-8")) or {}
+        return {str(h) for h in data.get("holidays", [])}
+    except Exception as e:
+        log.warning(f"holidays.yaml 읽기 실패 ({e}) — 공휴일 체크 비활성")
+        return set()
+
+_HOLIDAYS: set = set()  # 데몬 시작 시 1회 로드
+
+def is_trading_day(dt: datetime | None = None) -> bool:
+    """KRX 개장일 여부. 주말·공휴일이면 False."""
+    if dt is None:
+        dt = datetime.now(KST)
+    if dt.weekday() >= 5:  # Sat=5, Sun=6
+        return False
+    return dt.strftime("%Y-%m-%d") not in _HOLIDAYS
 
 # ── 스크립트별 타임아웃 설정 (초) ────────────────────
 SCRIPT_TIMEOUTS = {
@@ -211,6 +233,9 @@ def job_market_report():
 
 def job_premarket():
     """평일 08:00 — 장전 브리핑 (compiled context 기반 delta-only, vault_writer 경유)"""
+    if not is_trading_day():
+        log.info("오늘은 KRX 휴장일 — 장전 브리핑 스킵")
+        return
     log.info("=== 장전 브리핑 시작 ===")
     today = datetime.now(KST).strftime("%Y-%m-%d")
     vw = _get_vault_writer()
@@ -287,6 +312,9 @@ def job_premarket():
 
 def job_screening_morning():
     """평일 09:20 — 장초반 스크리닝 파이프라인"""
+    if not is_trading_day():
+        log.info("오늘은 KRX 휴장일 — 장초반 스크리닝 스킵")
+        return
     log.info("=== 장초반 스크리닝 시작 ===")
     # 1. RS 랭킹 (하루 1회)
     run_script("rs_ranking.py")
@@ -313,6 +341,9 @@ def job_screening_morning():
 
 def job_screening_midday():
     """평일 14:00 — 장중 스크리닝 파이프라인"""
+    if not is_trading_day():
+        log.info("오늘은 KRX 휴장일 — 장중 스크리닝 스킵")
+        return
     log.info("=== 장중 스크리닝 시작 ===")
     # RS는 오전에 이미 실행 — 생략
     ok = run_script("stage2_scanner.py", retries=2, retry_delay=15)
@@ -327,6 +358,9 @@ def job_screening_midday():
 
 def job_theme_screener():
     """평일 15:40 — 장마감 특징주 테마별 분류 (vault_writer 경유)"""
+    if not is_trading_day():
+        log.info("오늘은 KRX 휴장일 — 장마감 특징주 스크리닝 스킵")
+        return
     log.info("=== 장마감 특징주 스크리닝 시작 ===")
     today = datetime.now(KST).strftime("%Y-%m-%d")
     ok = run_script("theme_volume_screener.py")
@@ -541,6 +575,10 @@ def _acquire_lock():
 
 
 def main():
+    global _HOLIDAYS
+    _HOLIDAYS = _load_holidays()
+    log.info(f"휴장일 로드: {len(_HOLIDAYS)}건 — {sorted(_HOLIDAYS)[:3]}...")
+
     _acquire_lock()
     log.info("스케줄러 데몬 시작")
     log.info(f"작업 디렉토리: {BASE}")

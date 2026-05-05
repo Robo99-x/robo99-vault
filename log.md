@@ -15,3 +15,5 @@ ACTION 목록:
 
 ---
 ## [2026-05-03T08:05] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 파마리서치(214450) RS 2.3% / FLAG_REVIEW: 한스바이오메드(본계약 미확인), INTC(단기촉매 소멸) / HOLD: 10종목 / 상세: reviews/2026-05-03_주간ExitReview_CIO.md
+## [2026-05-05T14:01 KST] INGEST EU-중국인버터퇴출 → 00_inbox/2026/05/05/2026-05-05-140140-telegram-raw.md
+## [2026-05-05T14:02 KST] DRAFT EU-중국인버터퇴출-한국대체수혜 → 20_wiki/events/2026/05/05/2026-05-05-EU-중국인버터퇴출-한국대체수혜.md
