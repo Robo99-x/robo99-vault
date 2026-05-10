@@ -20,3 +20,4 @@ ACTION 목록:
 ## [2026-05-06T10:15 KST] SYSTEM_CHECK Geek 스크리닝 × 워치리스트 오버랩: 가온전선(000500/RS99.3%), 삼성전기(009150/RS99.0%), LS(006260/RS96.0%), 삼성전자(005930/RS89.3%) → reviews/2026-05-06_screening_watchlist_overlap.md
 ## [2026-05-06T12:01 KST] INGEST NVDA-Feynman-전력반도체 → 00_inbox/2026/05/06/2026-05-06-120036-telegram-raw.md
 ## [2026-05-06T12:02 KST] DRAFT NVDA-Feynman-800VDC → 20_wiki/events/2026/05/06/2026-05-06-NVDA-Feynman-전력반도체비용17배-800VDC.md
+## [2026-05-10T08:04] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 파마리서치(214450) RS 하위20% + 경쟁 심화, 가온전선(000240) RS 하위20% + 테마 이탈 | FLAG_REVIEW: 한스바이오메드(촉매 확인), 삼천당제약(3M -18%), INTC(어닝 후속) | HOLD: 8종목 → reviews/2026-05-10_WEEKLY_EXIT_REVIEW_CIO.md
