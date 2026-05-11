@@ -57,13 +57,14 @@ log = logging.getLogger("vault_writer")
 # ---------------------------------------------------------------------------
 
 
-def send_telegram(text: str, chat_id: str = TG_CHAT_ID) -> bool:
+def send_telegram(text: str, chat_id: str = TG_CHAT_ID, parse_mode: str | None = None) -> bool:
     """텔레그램 메시지 전송. 성공 여부 반환.
 
     구현은 lib.telegram.send 에 위임 (4000자 자동 분할, 4레벨 토큰 fallback 포함).
+    parse_mode="MarkdownV2" 시 실패해도 plain text fallback은 호출자가 처리.
     """
     try:
-        return _tg.send(text, chat_id=chat_id)
+        return _tg.send(text, chat_id=chat_id, parse_mode=parse_mode)
     except Exception as e:
         log.error(f"텔레그램 전송 예외: {e}")
         return False
@@ -362,7 +363,31 @@ def render_theme_screener(data: dict, registry: TickerRegistry) -> tuple[str, st
 
     md = f"---\n{fm_str}\n---\n\n" + "\n".join(lines)
     tg = _strip_wikilinks("\n".join(lines))
-    return md, tg
+
+    # MarkdownV2 버전 (종목명·테마명 bold)
+    md2_lines = [_escape_md2(header),
+                 _escape_md2("기준: 시총1조↑ +5%↑ / 시총1조↓ +7%↑ | 거래량 20일평균 1.5배↑"), ""]
+    for g in groups:
+        theme = g.get("theme", "???")
+        narrative = g.get("narrative", "")
+        md2_lines.append(f"*━━━ {_escape_md2(theme)} ━━━*")
+        if narrative:
+            md2_lines.append(_escape_md2(narrative))
+        for s in g.get("stocks", []):
+            md2_lines.append(_format_stock_line_md2(s, registry))
+        md2_lines.append("")
+    if misc:
+        md2_lines.append("*━━━ 📌 기타 단독 주요주 ━━━*")
+        for s in misc:
+            cat = s.get("catalyst", "")
+            line = _format_stock_line_md2(s, registry)
+            if cat:
+                line += f" — {_escape_md2(cat)}"
+            md2_lines.append(line)
+        md2_lines.append("")
+    tg_md2 = "\n".join(md2_lines)
+
+    return md, tg, tg_md2
 
 
 def _format_stock_line(s: dict, registry: TickerRegistry) -> str:
@@ -392,6 +417,36 @@ def _format_stock_line(s: dict, registry: TickerRegistry) -> str:
 def _strip_wikilinks(text: str) -> str:
     """[[종목명]] → 종목명 (텔레그램 plain text 용)."""
     return re.sub(r"\[\[([^\]]+)\]\]", r"\1", text)
+
+
+def _escape_md2(text: str) -> str:
+    """Telegram MarkdownV2 특수문자 이스케이프."""
+    return re.sub(r'([_*\[\]()~`>#\+\-=|{}.!\\])', r'\\\1', str(text))
+
+
+def _format_stock_line_md2(s: dict, registry: TickerRegistry) -> str:
+    """특징주 한 줄 — MarkdownV2 포맷 (종목명 bold)."""
+    name = s.get("ticker_name") or s.get("ticker_code", "???")
+    _, resolved_name = registry.resolve(name)
+    chg = s.get("change_pct", 0)
+    sign = "+" if chg >= 0 else ""
+    vol = s.get("vol_ratio", 0)
+    tv = s.get("trade_value_억", 0)
+    mc = s.get("market_cap_조", 0)
+    tag = s.get("tag", "")
+    reapp = " 재등장" if s.get("is_reappearance") else ""
+    parts = [f"• *{_escape_md2(resolved_name)}* {_escape_md2(f'{sign}{chg}%')}"]
+    if vol:
+        parts.append(_escape_md2(f"거래량 {vol}배"))
+    if tv:
+        parts.append(_escape_md2(f"대금 {int(tv):,}억"))
+    if mc:
+        parts.append(_escape_md2(f"(시총 {mc}조)"))
+    if tag:
+        parts.append(_escape_md2(tag))
+    if reapp:
+        parts.append(_escape_md2(reapp))
+    return " / ".join(parts)
 
 
 # ---------------------------------------------------------------------------
@@ -484,7 +539,12 @@ class VaultWriter:
         # 3. 렌더링
         try:
             self.registry._reload()  # 최신 registry
-            md, tg_text = renderer(data, self.registry)
+            render_result = renderer(data, self.registry)
+            if len(render_result) == 3:
+                md, tg_text, tg_md2 = render_result
+            else:
+                md, tg_text = render_result
+                tg_md2 = None
         except Exception as e:
             result["error"] = f"렌더링 실패: {e}"
             qp = quarantine_output(self.base, raw_json, task_name, result["error"], rid)
@@ -503,8 +563,14 @@ class VaultWriter:
             self._alert_failure(task_name, result["error"], rid)
             return result
 
-        # 5. 텔레그램 전송
-        tg_ok = send_telegram(tg_text)
+        # 5. 텔레그램 전송 (MarkdownV2 우선, 실패 시 plain text fallback)
+        if tg_md2:
+            tg_ok = send_telegram(tg_md2, parse_mode="MarkdownV2")
+            if not tg_ok:
+                log.warning(f"[{task_name}] MarkdownV2 전송 실패 — plain text 재시도")
+                tg_ok = send_telegram(tg_text)
+        else:
+            tg_ok = send_telegram(tg_text)
         result["telegram"] = tg_ok
         if not tg_ok:
             log.warning(f"[{task_name}] 텔레그램 전송 실패 — 파일은 정상 저장됨")

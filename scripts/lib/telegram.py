@@ -21,8 +21,11 @@ from lib.config import TG_CHAT_ID, get_tg_token
 log = logging.getLogger("telegram")
 
 
-def send(text: str, chat_id: str = TG_CHAT_ID) -> bool:
+def send(text: str, chat_id: str = TG_CHAT_ID, parse_mode: str | None = None) -> bool:
     """텔레그램 메시지 전송. 4000자 초과 시 자동 분할.
+
+    parse_mode: None(plain text) 또는 "MarkdownV2".
+    MarkdownV2 전송 실패 시 False 반환 (fallback은 호출자 책임).
 
     Returns:
         성공 여부
@@ -37,9 +40,12 @@ def send(text: str, chat_id: str = TG_CHAT_ID) -> bool:
 
         chunks = _split_message(text, max_len=4000)
         for chunk in chunks:
+            payload: dict = {"chat_id": chat_id, "text": chunk}
+            if parse_mode:
+                payload["parse_mode"] = parse_mode
             resp = requests.post(
                 f"https://api.telegram.org/bot{token}/sendMessage",
-                json={"chat_id": chat_id, "text": chunk},
+                json=payload,
                 timeout=15,
             )
             if not resp.ok:
