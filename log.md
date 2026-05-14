@@ -21,3 +21,6 @@ ACTION 목록:
 ## [2026-05-06T12:01 KST] INGEST NVDA-Feynman-전력반도체 → 00_inbox/2026/05/06/2026-05-06-120036-telegram-raw.md
 ## [2026-05-06T12:02 KST] DRAFT NVDA-Feynman-800VDC → 20_wiki/events/2026/05/06/2026-05-06-NVDA-Feynman-전력반도체비용17배-800VDC.md
 ## [2026-05-10T08:04] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 파마리서치(214450) RS 하위20% + 경쟁 심화, 가온전선(000240) RS 하위20% + 테마 이탈 | FLAG_REVIEW: 한스바이오메드(촉매 확인), 삼천당제약(3M -18%), INTC(어닝 후속) | HOLD: 8종목 → reviews/2026-05-10_WEEKLY_EXIT_REVIEW_CIO.md
+## [2026-05-14T07:36 KST] INGEST CSCO-FY3Q26 → 00_inbox/2026/05/14/2026-05-14-073513-telegram-raw.md
+## [2026-05-14T07:37 KST] DRAFT CSCO-FY3Q26-AI인프라주문90억상향 → 20_wiki/events/2026/05/14/2026-05-14-CSCO-FY3Q26-AI인프라주문90억상향.md
+## [2026-05-14T07:38 KST] CONFIRM 2026-05-14-CSCO-FY3Q26-AI인프라주문90억상향.md → confirmed

@@ -470,6 +470,12 @@ def job_system_health():
     )
 
 
+def job_consensus_digest():
+    """평일 18:00 — 애널 채널 컨센서스 Digest 생성"""
+    log.info("=== 컨센서스 Digest 생성 시작 ===")
+    run_script("consensus_digest.py")
+
+
 def job_weekly_upgrade():
     """토요일 08:00 — 히트레이트 분석 + 시장 레짐 파라미터 업그레이드"""
     log.info("=== weekly_market_upgrade 시작 ===")
@@ -607,6 +613,10 @@ def main():
     # 평일 15:40 — 장마감 특징주 분류
     sched.add_job(job_theme_screener, CronTrigger(day_of_week="mon-fri", hour=15, minute=40, timezone=KST),
                   id="theme_screener", max_instances=1, misfire_grace_time=300)
+
+    # 평일 18:00 — 컨센서스 Digest 생성
+    sched.add_job(job_consensus_digest, CronTrigger(day_of_week="mon-fri", hour=18, minute=0, timezone=KST),
+                  id="consensus_digest", max_instances=1, misfire_grace_time=300)
 
     # 매일 23:00 — 시스템 자가 점검
     sched.add_job(job_system_health, CronTrigger(hour=23, minute=0, timezone=KST),
