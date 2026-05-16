@@ -470,6 +470,18 @@ def job_system_health():
     )
 
 
+def job_fedwatch_daily():
+    """평일 07:55 — FedWatch 정기 브리핑"""
+    log.info("=== FedWatch 정기 브리핑 ===")
+    run_script("fedwatch_monitor.py", env_extra={"FEDWATCH_MODE": "daily"})
+
+
+def job_fedwatch():
+    """평일 4시간 주기 — FedWatch 변화 감지"""
+    log.info("=== FedWatch 변화 감지 ===")
+    run_script("fedwatch_monitor.py")
+
+
 def job_consensus_digest():
     """평일 18:00 — 애널 채널 컨센서스 Digest 생성"""
     log.info("=== 컨센서스 Digest 생성 시작 ===")
@@ -613,6 +625,15 @@ def main():
     # 평일 15:40 — 장마감 특징주 분류
     sched.add_job(job_theme_screener, CronTrigger(day_of_week="mon-fri", hour=15, minute=40, timezone=KST),
                   id="theme_screener", max_instances=1, misfire_grace_time=300)
+
+    # 평일 07:55 — FedWatch 정기 브리핑 (무조건 전송)
+    sched.add_job(job_fedwatch_daily, CronTrigger(day_of_week="mon-fri", hour=7, minute=55, timezone=KST),
+                  id="fedwatch_daily", max_instances=1, misfire_grace_time=300)
+
+    # 평일 4시간 주기 — FedWatch 변화 감지 (변화 있을 때만 알림)
+    for _h in [12, 16, 21]:
+        sched.add_job(job_fedwatch, CronTrigger(day_of_week="mon-fri", hour=_h, minute=5, timezone=KST),
+                      id=f"fedwatch_{_h}", max_instances=1, misfire_grace_time=600)
 
     # 평일 18:00 — 컨센서스 Digest 생성
     sched.add_job(job_consensus_digest, CronTrigger(day_of_week="mon-fri", hour=18, minute=0, timezone=KST),
