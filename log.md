@@ -24,3 +24,9 @@ ACTION 목록:
 ## [2026-05-14T07:36 KST] INGEST CSCO-FY3Q26 → 00_inbox/2026/05/14/2026-05-14-073513-telegram-raw.md
 ## [2026-05-14T07:37 KST] DRAFT CSCO-FY3Q26-AI인프라주문90억상향 → 20_wiki/events/2026/05/14/2026-05-14-CSCO-FY3Q26-AI인프라주문90억상향.md
 ## [2026-05-14T07:38 KST] CONFIRM 2026-05-14-CSCO-FY3Q26-AI인프라주문90억상향.md → confirmed
+
+## [2026-05-17T08:00] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 한스바이오메드(042520) RS 2.7%+3M -39.7%+촉매만료, 파마리서치(214450) RS 19.3% 3주연속 | FLAG_REVIEW: 삼천당제약(000250) 3M -27.9%↘, INTC 단기촉매소화 공백 | HOLD: 8종목 | 누적미이행: 파마리서치+가온전선+한스바이오메드 3건 수동처리필요 → reviews/2026-05-17_주간ExitReview_CIO.md
+## [2026-05-17T09:17 KST] CONFIRM 2026-05-05-EU-중국인버터퇴출-한국대체수혜.md → confirmed
+## [2026-05-17T09:17 KST] CONFIRM 2026-05-06-NVDA-Feynman-전력반도체비용17배-800VDC.md → confirmed
+## [2026-05-17T09:17 KST] CONFIRM 2026-04-29-삼성파운드리-4나노수율80-성숙공정진입.draft.md → confirmed (구 스키마)
+## [2026-05-17T09:17 KST] EXIT_REVIEW 주간 Exit Review 완료 — FLAG_RESOLVED:한스바이오메드 / FLAG_REVIEW:파마리서치,삼천당제약(2건)

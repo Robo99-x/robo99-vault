@@ -1,7 +1,7 @@
 ---
 schema_version: 1
 type: event
-status: draft
+status: confirmed
 date: 2026-05-06
 source: telegram
 source_file: "00_inbox/2026/05/06/2026-05-06-120036-telegram-raw.md"
