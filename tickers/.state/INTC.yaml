@@ -1,0 +1,17 @@
+ticker: 'INTC'
+name: INTC
+status: monitoring
+status_since: '2026-04-25'
+thesis: 'Q1 2026 어닝 서프라이즈 이후 중기 모멘텀 관찰'
+themes:
+- 반도체
+- 데이터센터
+catalysts_pending:
+- Q2 2026 실적 발표
+invalidation: '파운드리 전환 지연 또는 데이터센터 수요 재악화 시'
+appearances:
+- date: '2026-04-25'
+  kind: cio_review
+  ref: events/2026-04-25_Intel_Q1_Earnings.md
+last_seen: '2026-04-25'
+next_review: '2026-07-01'
