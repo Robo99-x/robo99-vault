@@ -45,6 +45,7 @@ SESSION_FILE = SECRETS / "telethon_session"
 # 모니터링할 채널 목록 (채널명: 저장 디렉토리명)
 CHANNELS: dict[str, str] = {
     "merITz_tech": "meritz_tech",
+    "cahier_de_market": "cahier_de_market",
 }
 
 
