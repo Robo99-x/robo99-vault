@@ -45,3 +45,9 @@ status: monitoring
 <!-- entity_syncer가 자동 기록. 아래 내용은 수동 편집 가능. -->
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
+## 채널 멘션
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-05-22 -->
+
+### meritz_tech (2건)
+- 2026-05-19 [Meritz Overnight Tech 2026. 5. 19. (화)](40_consensus/raw/meritz_tech/2026/05/19/164605_16973_Meritz_Overnight_Tech_2026__5__19___화.md)
+- 2026-05-18 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/05/18/165411_16963_메리츠증권_전기전자_IT부품_양승수___LG이노텍__011070.md)
