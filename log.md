@@ -31,3 +31,5 @@ ACTION 목록:
 ## [2026-05-17T09:17 KST] CONFIRM 2026-04-29-삼성파운드리-4나노수율80-성숙공정진입.draft.md → confirmed (구 스키마)
 ## [2026-05-17T09:17 KST] EXIT_REVIEW 주간 Exit Review 완료 — FLAG_RESOLVED:한스바이오메드 / FLAG_REVIEW:파마리서치,삼천당제약(2건)
 ## [2026-05-22T07:15] MARKET_REPORT 미장 마감 리포트 생성 및 전송 → report_20260522.md (Telegram: 1883449676)
+
+## [2026-05-24T08:05] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 한스바이오메드(042520), 파마리서치(214450) | FLAG_REVIEW: 삼천당제약(000250), 씨엠티엑스(060870), INTC | HOLD: 8종목 → reviews/2026-05-24_watchlist_CIO-exit-review.md
