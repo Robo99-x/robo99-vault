@@ -1,10 +1,10 @@
-[009150] 삼성전기 1581000원 (inf%) vol:1.77 turtle:S2
-[011070] LG이노텍 1064000원 (inf%) vol:2.55 turtle:S2
-[036930] 주성엔지니어링 238750원 (inf%) vol:1.94 turtle:S2
-[000990] DB하이텍 212500원 (inf%) vol:2.04 turtle:S2
-[353200] 대덕전자 171300원 (inf%) vol:2.46 turtle:S2
-[222800] 심텍 137400원 (inf%) vol:1.81 turtle:S2
-[403870] HPSP 61400원 (inf%) vol:4.16 turtle:S2
-[007810] 코리아써키트 114900원 (inf%) vol:1.79 turtle:S2
-[078600] 대주전자재료 163300원 (inf%) vol:1.6 turtle:S1
-[036540] SFA반도체 11130원 (inf%) vol:3.67 turtle:S2
+[009150]  1572000원 (inf%) vol:2.18 turtle:S2
+[034730]  656000원 (inf%) vol:1.53 turtle:S2
+[011070]  1068000원 (inf%) vol:2.96 turtle:S2
+[036930]  234500원 (inf%) vol:2.15 turtle:S2
+[000990]  220500원 (inf%) vol:2.5 turtle:S2
+[353200]  169200원 (inf%) vol:2.88 turtle:S2
+[222800]  132800원 (inf%) vol:2.15 turtle:S2
+[403870]  60100원 (inf%) vol:4.61 turtle:S2
+[007810]  110200원 (inf%) vol:1.99 turtle:S2
+[078600]  162100원 (inf%) vol:1.91 turtle:S1
