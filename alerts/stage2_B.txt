@@ -1,6 +1,0 @@
-[036540]  11010원 (inf%) vol:4.08 turtle:S2
-[420770]  142200원 (inf%) vol:3.11 turtle:S2
-[089970]  66200원 (inf%) vol:1.8 turtle:S2
-[295310]  133000원 (inf%) vol:2.47 turtle:S2
-[090460]  40200원 (inf%) vol:2.08 turtle:S2
-[001820]  137200원 (3.47%) vol:3.18 turtle:S2
