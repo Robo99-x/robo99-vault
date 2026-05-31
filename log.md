@@ -33,3 +33,7 @@ ACTION 목록:
 ## [2026-05-22T07:15] MARKET_REPORT 미장 마감 리포트 생성 및 전송 → report_20260522.md (Telegram: 1883449676)
 
 ## [2026-05-24T08:05] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 한스바이오메드(042520), 파마리서치(214450) | FLAG_REVIEW: 삼천당제약(000250), 씨엠티엑스(060870), INTC | HOLD: 8종목 → reviews/2026-05-24_watchlist_CIO-exit-review.md
+## [2026-05-31T08:04] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: 삼천당제약(×2), 파마리서치 / FLAG_REVIEW: 한스바이오메드, 씨엠티엑스, 현대로템, 두산에너빌리티, INTC / HOLD: 8종목 → reviews/2026-05-31_MULTI_CIO_ExitReview.md
+
+
+## [2026-05-31T00:00] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED 4건(한스바이오메드/파마리서치/INTC/삼천당제약격상), HOLD 9건 → reviews/2026-05-31_주간ExitReview_CIO.md
