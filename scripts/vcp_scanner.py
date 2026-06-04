@@ -215,7 +215,7 @@ def main():
     output_lines.append(f"\n✅ VCP 돌파 임박/진행 종목: {len(results)}개 발견\n")
     for r in results[:15]:
         change_sign = "+" if r['change'] > 0 else ""
-        output_lines.append(f"🔥 [{r['ticker']}] **{r['name']}**: {r['price']:,}원 ({change_sign}{r['change']:.2f}%)")
+        output_lines.append(f"🔥 [{r['ticker']}] <b>{r['name']}</b>: {r['price']:,}원 ({change_sign}{r['change']:.2f}%)")
         output_lines.append(f"  └ 🎯 피벗: {r['pivot']:,}원 | 📊 예상거래량: {r['projected_vol_ratio']}배 | 📉 VCP수축: {r['contractions']}T (최근낙폭 {r['last_depth']:.1f}%)")
         output_lines.append("")
         
@@ -225,7 +225,7 @@ def main():
     # Send via telegram if requested
     if os.environ.get("VCP_AUTO_SEND", "0") == "1":
         try:
-            telegram.send(msg)
+            telegram.send(msg, parse_mode="HTML")
         except Exception as e:
             print(f"Telegram send failed: {e}")
 
