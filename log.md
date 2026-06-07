@@ -37,3 +37,6 @@ ACTION 목록:
 
 
 ## [2026-05-31T00:00] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED 4건(한스바이오메드/파마리서치/INTC/삼천당제약격상), HOLD 9건 → reviews/2026-05-31_주간ExitReview_CIO.md
+
+## [2026-06-07T08:04] CIO_SESSION 주간 Exit Review — RESOLVED: INTC / FLAG_REVIEW: 한스바이오메드, 파마리서치, 삼천당제약, 씨엠티엑스 / HOLD: 8종 → reviews/2026-06-07_WEEKLY_EXIT_REVIEW_CIO.md
+## [2026-06-07T09:00] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×4(한스바이오메드·파마리서치·삼천당제약·INTC) FLAG_REVIEW×3(씨엠티엑스·현대로템·두산에너빌리티) HOLD×13 → reviews/2026-06-07_주간ExitReview_CIO.md
