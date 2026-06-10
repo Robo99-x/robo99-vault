@@ -21,6 +21,12 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from lib.mention_matcher import load_states, find_mentions  # noqa: E402
+
 # ── 경로 ────────────────────────────────────────────────
 BASE = Path(__file__).resolve().parent.parent
 TICKERS_DIR = BASE / "tickers"
@@ -33,13 +39,6 @@ SECTION_COMMENT_PREFIX = (
     "<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨)."
 )
 MAX_MENTIONS_PER_TICKER = 30
-MIN_NAME_LENGTH = 3  # substring 매칭 최소 글자수
-
-# 너무 짧거나 일반적이어서 substring 매칭 시 충돌 위험 → 코드 매칭만 사용
-EXCLUDE_NAMES_FROM_SUBSTRING = {
-    "T", "NC", "GS", "SK", "LG", "두산", "삼성", "현대", "롯데",
-    "한국", "한진", "효성", "코오롱", "한화", "AT&T",
-}
 
 
 # ── 유틸 ────────────────────────────────────────────────
@@ -73,51 +72,8 @@ def derive_title(filename: str, body: str) -> str:
 
 
 def load_ticker_states() -> tuple[dict, dict]:
-    """tickers/.state → (name_to_ticker, code_to_name)."""
-    name_to_ticker: dict[str, str] = {}
-    code_to_name: dict[str, str] = {}
-    if not STATE_DIR.exists():
-        return name_to_ticker, code_to_name
-
-    for sf in STATE_DIR.glob("*.yaml"):
-        try:
-            data = yaml.safe_load(sf.read_text(encoding="utf-8")) or {}
-            if not isinstance(data, dict):
-                continue
-            name = data.get("name") or sf.stem.split("-", 1)[-1]
-            code = str(data.get("ticker", "")).strip()
-            if name:
-                name_to_ticker[name] = code
-            if code and code.isdigit() and len(code) == 6:
-                code_to_name[code] = name
-        except Exception:
-            pass
-    return name_to_ticker, code_to_name
-
-
-def find_mentions(
-    content: str,
-    name_to_ticker: dict,
-    code_to_name: dict,
-) -> set[str]:
-    """raw 본문에서 언급된 종목명 set."""
-    found: set[str] = set()
-
-    # 1) 6자리 코드 매칭 (앞뒤 숫자 없는)
-    for code in re.findall(r"(?<!\d)(\d{6})(?!\d)", content):
-        if code in code_to_name:
-            found.add(code_to_name[code])
-
-    # 2) 이름 substring 매칭 (3자 이상)
-    for name in name_to_ticker:
-        if len(name) < MIN_NAME_LENGTH:
-            continue
-        if name in EXCLUDE_NAMES_FROM_SUBSTRING:
-            continue
-        if name in content:
-            found.add(name)
-
-    return found
+    """tickers/.state → (name_to_code, code_to_name). lib.mention_matcher 위임."""
+    return load_states(STATE_DIR)
 
 
 def format_section(mentions: list[dict], today_str: str) -> str:

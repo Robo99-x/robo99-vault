@@ -1,0 +1,7 @@
+{
+  "task_name": "premarket",
+  "run_id": "premarket_2026-06-10",
+  "error": "렌더링 실패: cannot use 'dict' as a dict key (unhashable type: 'dict')",
+  "raw_output": "{\n  \"briefing_date\": \"2026-06-10\",\n  \"macro_context\": \"전일 대비 워치리스트 신규 촉매 없음. 주의: theme_screener.json ZERO_PARSE 2일 연속 — 스크리너 데이터 공백으로 screener_top5 없음.\",\n  \"items\": [],\n  \"unchanged_tickers\": [\n    {\"ticker_code\": \"009150\", \"ticker_name\": \"삼성전기\"},\n    {\"ticker_code\": \"001820\", \"ticker_name\": \"삼화콘덴서\"},\n    {\"ticker_code\": \"LITE\", \"ticker_name\": \"LITE\"},\n    {\"ticker_code\": \"NVDA\", \"ticker_name\": \"NVDA\"},\n    {\"ticker_code\": \"060870\", \"ticker_name\": \"씨엠티엑스\"},\n    {\"ticker_code\": \"042520\", \"ticker_name\": \"한스바이오메드\"},\n    {\"ticker_code\": \"214450\", \"ticker_name\": \"파마리서치\"},\n    {\"ticker_code\": \"000250\", \"ticker_name\": \"삼천당제약\"},\n    {\"ticker_code\": \"229640\", \"ticker_name\": \"LS전선\"},\n    {\"ticker_code\": \"000500\", \"ticker_name\": \"가온전선\"},\n    {\"ticker_code\": \"GLW\", \"ticker_name\": \"GLW\"},\n    {\"ticker_code\": \"INTC\", \"ticker_name\": \"INTC\"},\n    {\"ticker_code\": \"005930\", \"ticker_name\": \"삼성전자\"}\n  ],\n  \"screener_top5\": [],\n  \"screener_date\": \"2026-06-10\"\n}",
+  "quarantined_at": "2026-06-10T08:00:41.782753"
+}

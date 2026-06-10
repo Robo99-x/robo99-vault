@@ -563,14 +563,8 @@ class VaultWriter:
             self._alert_failure(task_name, result["error"], rid)
             return result
 
-        # 5. 텔레그램 전송 (MarkdownV2 우선, 실패 시 plain text fallback)
-        if tg_md2:
-            tg_ok = send_telegram(tg_md2, parse_mode="MarkdownV2")
-            if not tg_ok:
-                log.warning(f"[{task_name}] MarkdownV2 전송 실패 — plain text 재시도")
-                tg_ok = send_telegram(tg_text)
-        else:
-            tg_ok = send_telegram(tg_text)
+        # 5. 텔레그램 전송 (plain text 고정 — MarkdownV2 이스케이프 실패 시 조용히 드롭됨)
+        tg_ok = send_telegram(tg_text)
         result["telegram"] = tg_ok
         if not tg_ok:
             log.warning(f"[{task_name}] 텔레그램 전송 실패 — 파일은 정상 저장됨")

@@ -112,20 +112,21 @@ Gate 2 통과 → status: integrated  (ticker/theme 파일 업데이트)
 ## 📋 다음 할 일 (우선순위순)
 
 ### P1 — 작고 즉시 가치 있음
-- [ ] **`consensus_digest.py` LLM 교체 + Telegram 발송** (오늘 수동으로 한 요약을 매일 18:00 자동화)
+- [x] **`consensus_digest.py` LLM 교체 + Telegram 발송** (매일 18:00 자동화 — 2026-06-10 완료)
 - [ ] 누락된 종목 .md 생성: 삼성전자(9건 멘션), 샘씨엔에스(252990), 덕산네오룩스, 이녹스첨단소재
-- [ ] `compile_channel_mentions.py` 스케줄러 통합 (매일 23:30)
+- [x] `compile_channel_mentions.py` 스케줄러 통합 (매일 22:30 — push 이전으로 재배치, 2026-06-10 완료)
 - [ ] **채널 확장** — `consensus_monitor.py` CHANNELS dict에 추가 채널 등록 (현재 monitor 데몬은 더 많은 채널 활동 감지 중)
 
 ### P2 — 중간 규모
 - [ ] **컨센서스/이벤트 변화 추적** — 종목별 의견 시계열, 다중 채널 동시 언급 spike detection
-- [ ] LLM 기반 `compile_overview.py` — 채널 멘션을 합성해서 `## 기업개요` 자동 생성
+- [x] **`compile_overview.py` (Fable 5)** — 채널 멘션 → 20_wiki/tickers/ wiki 초안 생성, 토 09:00 자동 실행 (2026-06-10 완료)
 - [ ] Oracle 에이전트 트리거 조건 명시화 (CLAUDE.md 라우팅 테이블)
 - [ ] `stage2_geek_filtered.json` 날짜별 아카이브 (히스토리 보존)
 - [ ] raw 파일 `processed: false` 마커 활용 (digest 후 true 전환, 중복 처리 방지)
 
 ### P3 — 장기 구조 개선
-- [ ] `20_wiki/tickers/` 마이그레이션 (현재 `tickers/`가 실 사용)
+- [x] `20_wiki/tickers/` 초기 채우기 — Fable 5로 9개 wiki 생성 (삼성전자·삼성전기·덕산네오룩스 등, 2026-06-10)
+- [ ] `20_wiki/tickers/` legacy 마이그레이션 (현재 `tickers/`가 실 사용)
 - [ ] 양방향 backlink — raw 파일에 "이 글이 언급한 종목" 인덱스
 - [ ] `20_wiki/tickers/INDEX.md` Karpathy 스타일 인덱스 자동 유지
 - [ ] CIO reviews → 종목 thesis/conviction 자동 누적

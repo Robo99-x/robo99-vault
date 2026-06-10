@@ -104,25 +104,9 @@ def _get_vault_writer():
 
 
 def _extract_json(text: str) -> str:
-    """Claude stdout 에서 JSON 블록을 추출.
-
-    시도 순서:
-      1) ```json ... ``` 코드블록
-      2) 첫 '{' ~ 마지막 '}' (가장 바깥 객체)
-      3) 원문 그대로 (vault_writer 가 파싱 실패 처리)
-    """
-    import re as _re
-    # 1. 코드블록
-    m = _re.search(r"```(?:json)?\s*\n(\{.*?\})\s*\n```", text, _re.DOTALL)
-    if m:
-        return m.group(1)
-    # 2. 바깥쪽 braces
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end > start:
-        return text[start : end + 1]
-    # 3. fallback
-    return text
+    """Claude stdout 에서 JSON 블록 추출. lib.claude_runner 위임."""
+    from lib import claude_runner
+    return claude_runner.extract_json(text) or text
 
 
 # ── 텔레그램 알림 (lib.telegram 위임) ──────────────────
@@ -132,7 +116,7 @@ from lib.config import TG_CHAT_ID  # noqa: E402
 def notify_failure(job_name: str, detail: str):
     """실패 시 텔레그램으로 즉시 알림. lib.telegram.send_alert 위임."""
     now = datetime.now(KST).strftime("%H:%M")
-    title = f"스케줄러 {now}] {job_name} 실패"
+    title = f"[스케줄러 {now}] {job_name} 실패"
     try:
         ok = _tg.send_alert(title, detail)
         if ok:
@@ -227,7 +211,7 @@ def job_market_report():
         "Send it to Telegram chat_id 1883449676. "
         f"Save to ~/robo99_hq/alerts/report_{datetime.now(KST).strftime('%Y%m%d')}.md",
         "미장 마감 리포트",
-        model="haiku",
+        model="sonnet",
     )
 
 
@@ -535,6 +519,18 @@ def job_weekly_calendar():
     run_script("weekly_calendar.py")
 
 
+def job_compile_channel_mentions():
+    """매일 22:30 — 채널 멘션 → 종목 .md backlink 갱신 (push 전에 실행해야 변경분이 백업됨)"""
+    log.info("=== 채널 멘션 컴파일 시작 ===")
+    run_script("compile_channel_mentions.py")
+
+
+def job_compile_overview():
+    """토요일 09:00 — 채널 멘션 → 20_wiki/tickers/ wiki 초안 생성 (Fable 5)"""
+    log.info("=== compile_overview 시작 ===")
+    run_script("compile_overview.py")
+
+
 def job_vault_push():
     """매일 23:10 — Obsidian 볼트 변경사항 GitHub 자동 push"""
     log.info("=== vault git push 시작 ===")
@@ -639,17 +635,26 @@ def main():
     sched.add_job(job_consensus_digest, CronTrigger(day_of_week="mon-fri", hour=18, minute=0, timezone=KST),
                   id="consensus_digest", max_instances=1, misfire_grace_time=300)
 
+    # 매일 22:30 — 채널 멘션 backlink 갱신 (push 이전 → 변경분 백업 보장)
+    sched.add_job(job_compile_channel_mentions, CronTrigger(hour=22, minute=30, timezone=KST),
+                  id="compile_channel_mentions", max_instances=1, misfire_grace_time=300)
+
     # 매일 23:00 — 시스템 자가 점검
     sched.add_job(job_system_health, CronTrigger(hour=23, minute=0, timezone=KST),
                   id="system_health", max_instances=1, misfire_grace_time=600)
 
-    # 매일 23:10 — vault GitHub push
+    # 매일 23:20 — vault GitHub push (점검 완료 후)
+    sched.add_job(job_vault_push, CronTrigger(hour=23, minute=20, timezone=KST),
+                  id="vault_push", max_instances=1, misfire_grace_time=300)
+
+    # 토 08:00 — 주간 히트레이트·레짐 업그레이드
     sched.add_job(job_weekly_upgrade, CronTrigger(day_of_week="sat", hour=8, minute=0, timezone=KST),
                   id="weekly_upgrade", name="주간 히트레이트·레짐 업그레이드",
                   misfire_grace_time=3600, max_instances=1)
 
-    sched.add_job(job_vault_push, CronTrigger(hour=23, minute=10, timezone=KST),
-                  id="vault_push", max_instances=1, misfire_grace_time=300)
+    # 토 09:00 — 20_wiki 종목 초안 생성 (Fable 5, 주 1회)
+    sched.add_job(job_compile_overview, CronTrigger(day_of_week="sat", hour=9, minute=0, timezone=KST),
+                  id="compile_overview", max_instances=1, misfire_grace_time=3600)
 
     # 일요일 08:00 — CIO 주간 Exit Review
     sched.add_job(job_cio_exit_review, CronTrigger(day_of_week="sun", hour=8, minute=0, timezone=KST),
@@ -668,8 +673,11 @@ def main():
     log.info("  평일 09:20 — 장초반 스크리닝")
     log.info("  평일 14:00 — 장중 스크리닝")
     log.info("  평일 15:40 — 장마감 특징주 분류")
+    log.info("  평일 18:00 — 컨센서스 Digest (Telegram)")
+    log.info("  매일 22:30 — 채널 멘션 backlink 갱신")
     log.info("  매일 23:00 — 시스템 자가 점검")
-    log.info("  매일 23:10 — vault GitHub push")
+    log.info("  매일 23:20 — vault GitHub push")
+    log.info("  토 09:00 — 20_wiki 종목 초안 (Fable 5)")
     log.info("  일요일 08:00 — CIO Exit Review")
     log.info("  월요일 07:30 — 주간 캘린더")
 

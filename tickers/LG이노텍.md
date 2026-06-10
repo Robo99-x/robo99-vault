@@ -46,8 +46,13 @@ status: monitoring
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-05-22 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-10 -->
 
-### meritz_tech (2건)
+### meritz_tech (7건)
+- 2026-06-10 [안녕하세요, 메리츠증권 양승수입니다. Computex 2026 현장 탐방기를 공유드립니다.](40_consensus/raw/meritz_tech/2026/06/10/172205_17256_안녕하세요__메리츠증권_양승수입니다__Computex_2026_현장_탐방.md)
+- 2026-06-05 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/06/05/004326_17147_메리츠증권_전기전자_IT부품_양승수______LG이노텍__베트남에_반도.md)
+- 2026-06-01 [Meritz Overnight Tech 2026. 6. 1 (월)](40_consensus/raw/meritz_tech/2026/06/01/164908_17090_Meritz_Overnight_Tech_2026__6__1__월____메.md)
+- 2026-05-29 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/05/29/165505_17066_메리츠증권_전기전자_IT부품_양승수___LG이노텍__011070___선.md)
+- 2026-05-27 [Meritz Overnight Tech 2026. 5. 27 (수)](40_consensus/raw/meritz_tech/2026/05/27/163828_17045_Meritz_Overnight_Tech_2026__5__27__수.md)
 - 2026-05-19 [Meritz Overnight Tech 2026. 5. 19. (화)](40_consensus/raw/meritz_tech/2026/05/19/164605_16973_Meritz_Overnight_Tech_2026__5__19___화.md)
 - 2026-05-18 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/05/18/165411_16963_메리츠증권_전기전자_IT부품_양승수___LG이노텍__011070.md)

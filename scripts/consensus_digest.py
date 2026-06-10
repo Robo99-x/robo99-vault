@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-consensus_digest.py — 애널 채널 일일 집계
+consensus_digest.py — 애널 채널 일일 LLM 요약 + Telegram 발송
 
 40_consensus/raw/ 의 오늘 파일들을 읽어서
-종목별로 집계(TP/의견/Outlier)하고
-40_consensus/digests/ 에 저장한다.
+Claude LLM으로 종목별/테마별 요약을 생성하고
+Telegram으로 발송한다.
 
 실행:
   cd ~/robo99_hq/scripts && uv run python consensus_digest.py
-  또는 scheduler_daemon.py 에서 매일 18:00 KST 자동 실행
+  scheduler_daemon.py 에서 매일 18:00 KST 자동 실행
 """
 from __future__ import annotations
 
@@ -24,6 +24,7 @@ if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
 from lib.config import BASE
+from lib import telegram
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger("consensus_digest")
@@ -32,77 +33,10 @@ CONSENSUS_DIR = BASE / "40_consensus"
 RAW_DIR = CONSENSUS_DIR / "raw"
 DIGEST_DIR = CONSENSUS_DIR / "digests"
 
-# ── 정규식 패턴 ────────────────────────────────────────────
-# 목표주가
-_TP_PATTERNS = [
-    re.compile(r"목표주가[\s:]*([0-9]{3,7})(?:,000)?원"),
-    re.compile(r"TP[\s:]+([0-9,]{3,10})"),
-    re.compile(r"목표[\s]*([0-9]{3,7})(?:,000)?원"),
-    re.compile(r"([0-9]{2,6})(?:,000)?원으로\s*(?:상향|하향|유지)"),
-]
-
-# 투자의견
-_OPINION_PATTERNS = [
-    re.compile(r"(강력\s*매수|적극\s*매수|매수\s*추가|매수|중립|매도|비중\s*확대|보유|OUTPERFORM|BUY|HOLD|SELL|OVERWEIGHT|UNDERWEIGHT)", re.I),
-]
-
-# 종목명/코드
-_TICKER_PATTERNS = [
-    re.compile(r"([가-힣]+(?:전자|증권|화학|건설|바이오|제약|테크|홀딩스|그룹|에너지|금융|모터스|항공))\b"),
-    re.compile(r"\((\d{6})\)"),  # (종목코드)
-    re.compile(r"([A-Z]{2,5})\s*\("),  # 영문 티커
-]
-
-# 의견 정규화
-_OPINION_MAP = {
-    "강력매수": "매수", "적극매수": "매수", "매수추가": "매수",
-    "매수": "매수", "buy": "매수", "outperform": "매수", "overweight": "매수",
-    "비중확대": "매수",
-    "중립": "중립", "hold": "중립", "보유": "중립",
-    "매도": "매도", "sell": "매도", "underweight": "매도",
-}
-
-
-def _extract_tp(text: str) -> int | None:
-    for pat in _TP_PATTERNS:
-        m = pat.search(text)
-        if m:
-            val = m.group(1).replace(",", "")
-            try:
-                tp = int(val)
-                # 천원 단위 짧게 쓴 경우 (e.g. 102 → 102,000)
-                if tp < 10000:
-                    tp *= 1000
-                if 1000 <= tp <= 10_000_000:
-                    return tp
-            except ValueError:
-                pass
-    return None
-
-
-def _extract_opinion(text: str) -> str | None:
-    for pat in _OPINION_PATTERNS:
-        m = pat.search(text)
-        if m:
-            raw = m.group(1).strip().replace(" ", "").lower()
-            return _OPINION_MAP.get(raw)
-    return None
-
-
-def _extract_ticker(text: str) -> str | None:
-    # 종목코드 우선
-    m = re.search(r"\((\d{6})\)", text)
-    if m:
-        return m.group(1)
-    # 영문 티커
-    m = re.search(r"\b([A-Z]{2,5})\b", text)
-    if m and m.group(1) not in {"AI", "IT", "FY", "YoY", "QoQ", "TP", "EPS", "PER", "ROE"}:
-        return m.group(1)
-    # 한글 종목명 (첫 번째만)
-    m = _TICKER_PATTERNS[0].search(text)
-    if m:
-        return m.group(1)
-    return None
+# 메시지당 body 최대 길이 (토큰 절감)
+_MAX_BODY = 600
+# 채널당 최대 메시지 수
+_MAX_MSGS = 60
 
 
 def _read_raw_files(channel_dir: Path, target_date: date) -> list[dict]:
@@ -114,86 +48,85 @@ def _read_raw_files(channel_dir: Path, target_date: date) -> list[dict]:
     messages = []
     for f in sorted(day_dir.glob("*.md")):
         text = f.read_text(encoding="utf-8")
-        # frontmatter 제거
         body = re.sub(r"^---.*?---\n\n?", "", text, flags=re.DOTALL).strip()
         if not body:
             continue
-        messages.append({
-            "file": f.name,
-            "body": body,
-            "tp": _extract_tp(body),
-            "opinion": _extract_opinion(body),
-            "ticker": _extract_ticker(body),
-        })
+        messages.append({"file": f.name, "body": body})
     return messages
 
 
-def _build_digest(channel_name: str, messages: list[dict], target_date: date) -> str:
-    """메시지 리스트 → digest markdown."""
+def _llm_digest(channel_name: str, messages: list[dict], target_date: date) -> str | None:
+    """Claude LLM으로 채널 메시지 요약. 실패 시 None."""
+    from lib import claude_runner
+
+    date_str = target_date.strftime("%Y-%m-%d")
+    sample = messages[:_MAX_MSGS]
+    bodies = "\n\n---\n".join(m["body"][:_MAX_BODY] for m in sample)
+
+    prompt = (
+        f"채널: {channel_name} | 날짜: {date_str} | {len(messages)}건"
+        + (f" (상위 {len(sample)}건 표시)" if len(messages) > len(sample) else "")
+        + f"\n\n=== 원문 ===\n{bodies}\n\n"
+        "=== 지시사항 ===\n"
+        "투자자 관점의 채널 일일 요약을 작성하세요.\n"
+        "형식 (이 순서 그대로):\n"
+        f"[{channel_name} {date_str}] 총 {len(messages)}건\n\n"
+        "종목/테마별\n"
+        "• 종목명: 핵심 포인트 1-2줄\n\n"
+        "매크로/기타\n"
+        "• 포인트 1줄\n\n"
+        "3,500자 이내. 한국어. 마크다운 볼드/이탤릭 없이 plain text."
+    )
+
+    return claude_runner.run(prompt, f"consensus_digest_{channel_name}", timeout=180)
+
+
+def _rule_based_digest(channel_name: str, messages: list[dict], target_date: date) -> str:
+    """LLM 실패 시 fallback — rule-based 집계."""
     date_str = target_date.strftime("%Y-%m-%d")
     total = len(messages)
 
-    # 종목별 그룹핑
-    by_ticker: dict[str, list[dict]] = defaultdict(list)
-    no_ticker = []
+    tp_pat = [
+        re.compile(r"목표주가[\s:]*([0-9]{3,7})(?:,000)?원"),
+        re.compile(r"TP[\s:]+([0-9,]{3,10})"),
+    ]
+    opinion_pat = re.compile(
+        r"(강력\s*매수|적극\s*매수|매수|중립|매도|BUY|HOLD|SELL)", re.I
+    )
+    opinion_map = {
+        "강력매수": "매수", "적극매수": "매수", "매수": "매수",
+        "buy": "매수", "중립": "중립", "hold": "중립",
+        "보유": "중립", "매도": "매도", "sell": "매도",
+    }
+
+    by_ticker: dict[str, list[str]] = defaultdict(list)
+    misc = []
     for m in messages:
-        if m["ticker"]:
-            by_ticker[m["ticker"]].append(m)
+        body = m["body"]
+        ticker = None
+        tc = re.search(r"\((\d{6})\)", body)
+        if tc:
+            ticker = tc.group(1)
         else:
-            no_ticker.append(m)
+            en = re.search(r"\b([A-Z]{2,5})\b", body)
+            if en and en.group(1) not in {"AI", "IT", "FY", "YoY", "QoQ", "TP", "EPS", "PER", "ROE"}:
+                ticker = en.group(1)
+
+        line = body[:120].replace("\n", " ")
+        if ticker:
+            by_ticker[ticker].append(line)
+        else:
+            misc.append(line)
 
     lines = [
-        f"---",
-        f"channel: {channel_name}",
-        f"date: {date_str}",
-        f"total_messages: {total}",
-        f"tickers_covered: {len(by_ticker)}",
-        f"generated_at: {datetime.now().strftime('%Y-%m-%dT%H:%M:%S')} KST",
-        f"---",
-        f"",
-        f"# {channel_name} 컨센서스 집계 ({date_str})",
-        f"",
-        f"총 {total}건 | 종목 {len(by_ticker)}개",
-        f"",
+        f"[{channel_name} {date_str}] 총 {total}건 (rule-based fallback)",
+        "",
     ]
-
-    for ticker, msgs in sorted(by_ticker.items()):
-        tps = [m["tp"] for m in msgs if m["tp"]]
-        opinions = [m["opinion"] for m in msgs if m["opinion"]]
-
-        lines.append(f"## {ticker}")
-
-        # TP 집계
-        if tps:
-            avg_tp = int(sum(tps) / len(tps))
-            tp_range = f"{min(tps):,} ~ {max(tps):,}"
-            lines.append(f"TP 평균: {avg_tp:,}원 | 범위: {tp_range}원 ({len(tps)}건)")
-
-            # Outlier 탐지 (평균에서 15% 이상 이탈)
-            threshold = avg_tp * 0.15
-            outliers = [(m, m["tp"]) for m in msgs if m["tp"] and abs(m["tp"] - avg_tp) > threshold]
-            if outliers:
-                lines.append(f"⚠️ Outlier:")
-                for m, tp in outliers:
-                    lines.append(f"  - {m['file']}: TP {tp:,}원 (평균 대비 {(tp - avg_tp) / avg_tp * 100:+.0f}%)")
-
-        # 의견 집계
-        if opinions:
-            from collections import Counter
-            cnt = Counter(opinions)
-            opinion_str = " / ".join(f"{k} {v}건" for k, v in cnt.most_common())
-            lines.append(f"의견: {opinion_str}")
-
-        # 원문 링크
-        lines.append(f"원문: {', '.join(m['file'] for m in msgs)}")
+    for ticker, excerpts in sorted(by_ticker.items()):
+        lines.append(f"• {ticker}: {excerpts[0]}")
+    if misc:
         lines.append("")
-
-    if no_ticker:
-        lines.append(f"## 기타 (종목 미분류)")
-        for m in no_ticker:
-            lines.append(f"- {m['file']}")
-        lines.append("")
-
+        lines.append(f"기타 {len(misc)}건")
     return "\n".join(lines)
 
 
@@ -202,7 +135,11 @@ def run(target_date: date | None = None):
         target_date = date.today()
 
     date_str = target_date.strftime("%Y-%m-%d")
-    log.info(f"Digest 생성 시작: {date_str}")
+    log.info(f"Digest 시작: {date_str}")
+
+    if not RAW_DIR.exists():
+        log.warning(f"RAW_DIR 없음: {RAW_DIR}")
+        return
 
     total_digests = 0
 
@@ -212,21 +149,33 @@ def run(target_date: date | None = None):
         channel_name = channel_dir.name
         messages = _read_raw_files(channel_dir, target_date)
         if not messages:
-            log.info(f"{channel_name}: 오늘 메시지 없음")
+            log.info(f"{channel_name}: 오늘 메시지 없음 — 스킵")
             continue
 
-        log.info(f"{channel_name}: {len(messages)}건 처리")
-        digest_md = _build_digest(channel_name, messages, target_date)
+        log.info(f"{channel_name}: {len(messages)}건 → LLM 요약 중")
+        digest_text = _llm_digest(channel_name, messages, target_date)
 
-        # 저장
+        if not digest_text:
+            log.warning(f"{channel_name}: LLM 실패 — rule-based fallback 사용")
+            digest_text = _rule_based_digest(channel_name, messages, target_date)
+
+        # 파일 저장
         out_dir = DIGEST_DIR / channel_name / target_date.strftime("%Y/%m")
         out_dir.mkdir(parents=True, exist_ok=True)
         out_file = out_dir / f"{date_str}_digest.md"
-        out_file.write_text(digest_md, encoding="utf-8")
+        out_file.write_text(digest_text, encoding="utf-8")
         log.info(f"저장: {out_file.relative_to(BASE)}")
+
+        # Telegram 발송
+        ok = telegram.send(digest_text)
+        if ok:
+            log.info(f"{channel_name}: Telegram 발송 완료")
+        else:
+            log.warning(f"{channel_name}: Telegram 발송 실패 (파일은 저장됨)")
+
         total_digests += 1
 
-    log.info(f"Digest 생성 완료: {total_digests}개 채널")
+    log.info(f"완료: {total_digests}개 채널 처리")
 
 
 if __name__ == "__main__":
