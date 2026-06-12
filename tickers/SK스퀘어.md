@@ -44,7 +44,7 @@ status: monitoring
 26/04/20 S2 +1.9% RS94% 외인+750억 OK
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-11 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-12 -->
 
 ### cahier_de_market (1건)
 - 2026-06-12 [SK스퀘어, 삼성전기, 현대차, 한화에어로스페이스, 한미반도체, 리노공업](40_consensus/raw/cahier_de_market/2026/06/12/020855_9779_SK스퀘어__삼성전기__현대차__한화에어로스페이스__한미반도체__리노공업.md)
