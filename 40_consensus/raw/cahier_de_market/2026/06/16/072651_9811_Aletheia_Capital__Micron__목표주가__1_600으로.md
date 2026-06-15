@@ -1,0 +1,24 @@
+---
+source: telegram
+channel: cahier_de_market
+message_id: 9811
+date: 2026-06-16
+datetime: 2026-06-16T07:26:51 KST
+sender: cahier_de_market
+processed: false
+---
+
+Aletheia Capital
+
+Micron
+
+목표주가 $1,600으로 상향
+
+
+"우리는 **MU의 EPS가 CY27E에 8.5배 급증하고, 이어서 CY28E에 1.8배 추가 확대**될 것으로 전망한다. 이는 **누적 기준 약 15배의 EPS 성장과 FY26-28E 기간 동안 3,500억~4,000억 달러의 FCF 창출**을 의미한다."
+
+"우리는 이제 **서버 DRAM ASP가 C3Q26에 추가로 30% 상승**할 것으로 예상한다(**기존 전망치 10~15% 대비 상향**). 이는 **C4Q26에 다시 10~15% 상승**할 가능성이 높다(기존 전망치와 동일)."
+
+"우리는 이제 **HBM ASP가 C2027에 전년 대비 두 배(YoY 100% 상승)가 될 것으로 예상**한다."
+
+"우리의 분석에 따르면, **메모리는 AI 하드웨어 시스템에서 가장 핵심적인(critical) 부품이 되어가고 있다.**"
