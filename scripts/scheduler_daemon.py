@@ -440,7 +440,9 @@ def job_system_health():
     today = datetime.now(KST).strftime("%Y-%m-%d")
     # 1. watchlist 동기화 확인
     run_script("sync_watchlist.py")
-    # 2. Claude가 오늘의 스케줄러 로그를 분석하고 요약
+    # 2. MCP/텔레그램 연결 상태 점검
+    run_script("check_mcp_health.py")
+    # 3. Claude가 오늘의 스케줄러 로그를 분석하고 요약
     run_claude(
         "Read ~/CLAUDE.md. "
         f"Today is {today}. Run a system health check: "
@@ -449,7 +451,7 @@ def job_system_health():
         "   If missing events exist, update watchlist.md to add them in the appropriate section (ACTIVE or MONITORING). "
         "3) Check the freshness of key data files: alerts/market_snapshot_*.json, alerts/rs_rankings.json, alerts/stage2_geek_filtered.json. "
         "4) Send a concise daily system health summary to Telegram chat_id 1883449676. "
-        "Format: [시스템 점검 {today}] 스케줄 N/N 성공, 데이터 신선도 OK/STALE, watchlist 동기화 상태.",
+        f"Format: [시스템 점검 {today}] 스케줄 N/N 성공, 데이터 신선도 OK/STALE, watchlist 동기화 상태, MCP/텔레그램 상태.",
         "시스템 자가 점검",
     )
 

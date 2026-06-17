@@ -91,6 +91,18 @@ Gate 2 통과 → status: integrated  (ticker/theme 파일 업데이트)
 - [x] 채널 자동 수집 (consensus_monitor — meritz_tech, cahier_de_market)
 - [x] 주간 Exit Review (월요일 자동 실행)
 
+### 2026-06-17 세션 (MCP 안정화 + wiki 지식체계)
+- [x] 버그 4건 수정 (notify_failure 포맷, _extract_json 중복, MarkdownV2 금지, haiku→sonnet)
+- [x] consensus_digest.py LLM(Fable 5) 교체 + Telegram 자동 발송
+- [x] compile_channel_mentions.py 스케줄러 통합 (22:30)
+- [x] compile_overview.py 신규 (Fable 5, 토 09:00, 20_wiki/tickers/ 9개 생성)
+- [x] lib/mention_matcher.py 추출 — 중복 매칭 로직 통합
+- [x] 스케줄 타임라인 재배치 (22:30→23:00→23:20)
+- [x] robo99 MCP 서버 구현 (stdio 방식, settings.json 등록)
+- [x] check_mcp_health.py — 매일 23:00 시스템 점검에 통합
+- [x] SpaceX(SPCX) watchlist ACTIVE 추가 (2026-06-12 NASDAQ 상장)
+- [x] Fable 5 아키텍처 점검 — 6개 구조적 약점 식별 및 즉각 조치
+
 ### 2026-05-22 세션 (워크플로우 리뷰 + 정합성 보강)
 - [x] 워크플로우 전체 리뷰 + 문제점 5가지 진단
 - [x] watchlist `.state` 시드 15개 (UNRESOLVED_ALIAS 15→0)
@@ -113,7 +125,7 @@ Gate 2 통과 → status: integrated  (ticker/theme 파일 업데이트)
 
 ### P1 — 작고 즉시 가치 있음
 - [x] **`consensus_digest.py` LLM 교체 + Telegram 발송** (매일 18:00 자동화 — 2026-06-10 완료)
-- [ ] 누락된 종목 .md 생성: 삼성전자(9건 멘션), 샘씨엔에스(252990), 덕산네오룩스, 이녹스첨단소재
+- [x] 누락된 종목 .md 생성 — 삼성전자·샘씨엔에스·덕산네오룩스 등 20_wiki/tickers/ 14개 자동 생성 완료. 이녹스첨단소재만 잔여 (멘션 3건 이상 시 토요일 자동 생성)
 - [x] `compile_channel_mentions.py` 스케줄러 통합 (매일 22:30 — push 이전으로 재배치, 2026-06-10 완료)
 - [ ] **채널 확장** — `consensus_monitor.py` CHANNELS dict에 추가 채널 등록 (현재 monitor 데몬은 더 많은 채널 활동 감지 중)
 

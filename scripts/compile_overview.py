@@ -2,7 +2,7 @@
 """
 compile_overview.py — 채널 멘션 → 20_wiki/tickers/{종목코드}.md 초안 생성
 
-Fable 5 (claude-fable-5) 를 사용해서:
+Fable 5 (claude-opus-4-8) 를 사용해서:
   1. 채널 raw 메시지에서 많이 언급된 종목 파악
   2. 해당 종목의 원문들을 읽어 기업 분석 wiki 초안 생성
   3. 20_wiki/tickers/ 에 저장 (기존 파일 있으면 스킵)
@@ -144,7 +144,7 @@ def _generate_wiki(
     return claude_runner.run(
         prompt,
         f"compile_overview_{ticker_name}",
-        model="claude-fable-5",
+        model="claude-opus-4-8",
         timeout=300,
     )
 
@@ -224,7 +224,7 @@ def run(target_ticker: str | None = None, force: bool = False, min_mentions: int
             skipped += 1
             continue
 
-        log.info(f"  생성 중: {name} ({len(msgs)}건) → claude-fable-5")
+        log.info(f"  생성 중: {name} ({len(msgs)}건) → claude-opus-4-8")
         body = _generate_wiki(name, code, state, msgs)
 
         if not body:
