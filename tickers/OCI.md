@@ -44,7 +44,7 @@ status: monitoring
 26/04/22 [태양광에너지, 반도체 재료/부품] +23.6% 대금361억 거래량4.0x 🚀55일 신고가
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-17 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-18 -->
 
 ### meritz_tech (1건)
 - 2026-06-16 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/06/16/032759_17344_메리츠증권_전기전자_IT부품_양승수______Optical_Interc.md)
