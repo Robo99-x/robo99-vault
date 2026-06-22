@@ -24,7 +24,7 @@ from lib.config import BASE
 # ── 워치리스트에 없어도 항상 추적할 대형주 ────────────────
 ALWAYS_WATCH = [
     "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA",
-    "TSM", "AMD", "AVGO", "INTC", "QCOM",
+    "TSM", "AMD", "AVGO", "INTC", "QCOM", "MU",
     "JPM", "GS", "BAC", "XOM", "CVX",
 ]
 
@@ -84,6 +84,8 @@ FIXED_EVENTS_2026: list[tuple[date, str]] = [
     (date(2026, 10, 30), "미국 PCE (9월)"),
     (date(2026, 11, 25), "미국 PCE (10월)"),
     (date(2026, 12, 23), "미국 PCE (11월)"),
+    # 주주총회
+    (date(2026, 6, 24), "NVDA 연간 주주총회 (온라인)"),
     # BOK (한국 기준금리 — 연 8회)
     (date(2026, 5, 28), "BOK 기준금리 결정"),
     (date(2026, 7, 16), "BOK 기준금리 결정"),
@@ -103,13 +105,20 @@ def parse_us_tickers_from_watchlist() -> list[str]:
     return [t for t in found if t.isalpha() and t not in TICKER_BLOCKLIST]
 
 
-def next_week_range() -> tuple[date, date]:
-    """다음 주 월요일~금요일 반환 (일요일 실행 기준)."""
+def this_week_range() -> tuple[date, date]:
+    """이번 주 월요일~금요일 반환."""
     today = date.today()
-    days_until_monday = (7 - today.weekday()) % 7 or 7
-    mon = today + timedelta(days=days_until_monday)
+    mon = today - timedelta(days=today.weekday())
     fri = mon + timedelta(days=4)
     return mon, fri
+
+
+def next_week_range() -> tuple[date, date]:
+    """다음 주 월요일~금요일 반환."""
+    mon, _ = this_week_range()
+    next_mon = mon + timedelta(days=7)
+    next_fri = next_mon + timedelta(days=4)
+    return next_mon, next_fri
 
 
 def get_earnings_next_week(tickers: list[str], week_start: date, week_end: date) -> list[dict]:
@@ -160,18 +169,18 @@ def get_econ_events(week_start: date, week_end: date) -> list[dict]:
     return events
 
 
-def format_message(
+def _format_week_section(
+    label: str,
     earnings: list[dict],
     econ: list[dict],
     week_start: date,
     week_end: date,
-) -> str:
+) -> list[str]:
     ws = week_start.strftime("%m/%d")
     we = week_end.strftime("%m/%d")
-    lines = [f"주간 캘린더 ({ws}~{we})"]
-    lines.append("")
+    lines = [f"[{label} {ws}~{we}]"]
 
-    lines.append("[실적 발표]")
+    lines.append("실적 발표")
     if earnings:
         prev_date = None
         for e in earnings:
@@ -180,14 +189,14 @@ def format_message(
                     lines.append("")
                 lines.append(e["date"].strftime("%m/%d(%a)"))
                 prev_date = e["date"]
-            label = f"{e['ticker']} ({e['name']})" if e.get("name") and e["name"] != e["ticker"] else e["ticker"]
+            label_str = f"{e['ticker']} ({e['name']})" if e.get("name") and e["name"] != e["ticker"] else e["ticker"]
             hint = f"  {e['eps_hint']}" if e["eps_hint"] else ""
-            lines.append(f"{label}{hint}")
+            lines.append(f"{label_str}{hint}")
     else:
         lines.append("없음")
     lines.append("")
 
-    lines.append("[주요 경제지표]")
+    lines.append("경제지표")
     if econ:
         prev_date = None
         for e in econ:
@@ -200,23 +209,47 @@ def format_message(
     else:
         lines.append("없음")
 
+    return lines
+
+
+def format_message(
+    this_earnings: list[dict],
+    this_econ: list[dict],
+    this_start: date,
+    this_end: date,
+    next_earnings: list[dict],
+    next_econ: list[dict],
+    next_start: date,
+    next_end: date,
+) -> str:
+    lines = ["주간 캘린더", ""]
+    lines += _format_week_section("이번 주", this_earnings, this_econ, this_start, this_end)
+    lines.append("")
+    lines += _format_week_section("다음 주", next_earnings, next_econ, next_start, next_end)
     return "\n".join(lines)
 
 
 def main():
-    week_start, week_end = next_week_range()
+    this_start, this_end = this_week_range()
+    next_start, next_end = next_week_range()
 
     wl_tickers = parse_us_tickers_from_watchlist()
     all_tickers = list(dict.fromkeys(ALWAYS_WATCH + wl_tickers))
 
-    print(f"다음 주 {week_start}~{week_end}, 티커 {len(all_tickers)}개 조회 중...")
-    earnings = get_earnings_next_week(all_tickers, week_start, week_end)
-    print(f"  실적 {len(earnings)}건")
+    print(f"이번 주 {this_start}~{this_end} + 다음 주 {next_start}~{next_end}, 티커 {len(all_tickers)}개 조회 중...")
 
-    econ = get_econ_events(week_start, week_end)
-    print(f"  경제지표 {len(econ)}건")
+    this_earnings = get_earnings_next_week(all_tickers, this_start, this_end)
+    next_earnings = get_earnings_next_week(all_tickers, next_start, next_end)
+    print(f"  실적 이번 주 {len(this_earnings)}건 / 다음 주 {len(next_earnings)}건")
 
-    msg = format_message(earnings, econ, week_start, week_end)
+    this_econ = get_econ_events(this_start, this_end)
+    next_econ = get_econ_events(next_start, next_end)
+    print(f"  경제지표 이번 주 {len(this_econ)}건 / 다음 주 {len(next_econ)}건")
+
+    msg = format_message(
+        this_earnings, this_econ, this_start, this_end,
+        next_earnings, next_econ, next_start, next_end,
+    )
     print(msg)
 
     ok = _tg.send(msg)

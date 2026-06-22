@@ -46,9 +46,10 @@ status: monitoring
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-21 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-22 -->
 
-### meritz_tech (7건)
+### meritz_tech (8건)
+- 2026-06-22 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/06/22/234051_17404_메리츠증권_전기전자_IT부품_양승수______삼성전기__퀄컴__AI20.md)
 - 2026-06-10 [안녕하세요, 메리츠증권 양승수입니다. Computex 2026 현장 탐방기를 공유드립니다.](40_consensus/raw/meritz_tech/2026/06/10/172205_17256_안녕하세요__메리츠증권_양승수입니다__Computex_2026_현장_탐방.md)
 - 2026-06-05 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/06/05/004326_17147_메리츠증권_전기전자_IT부품_양승수______LG이노텍__베트남에_반도.md)
 - 2026-06-01 [Meritz Overnight Tech 2026. 6. 1 (월)](40_consensus/raw/meritz_tech/2026/06/01/164908_17090_Meritz_Overnight_Tech_2026__6__1__월____메.md)
