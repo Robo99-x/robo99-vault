@@ -46,7 +46,7 @@ status: monitoring
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-24 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-06-25 -->
 
 ### meritz_tech (8건)
 - 2026-06-22 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/06/22/234051_17404_메리츠증권_전기전자_IT부품_양승수______삼성전기__퀄컴__AI20.md)
