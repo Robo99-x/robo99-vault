@@ -43,3 +43,5 @@ ACTION 목록:
 ## [2026-06-14T08:00] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×4(한스바이오메드·파마리서치·삼천당제약·INTC, 전부 누적 미이행) FLAG_REVIEW×1(씨엠티엑스 6주+ 미수록) HOLD×15 — 삼천당제약 RS 7.4%(전주 26.7%) 급락 최우선, 현대로템·두산에너빌리티 RS 회복으로 HOLD 복귀 → reviews/2026-06-14_주간ExitReview_CIO.md
 ## [2026-06-17T07:35] INGEST SpaceX IPO (SPCX) → watchlist ACTIVE 추가. IPO 2026-06-12 NASDAQ, → (+19%), 시총 .1T, 역대 최대 IPO B
 ## [2026-06-17T17:29] RESOLVED 한스바이오메드·파마리서치(스킨부스터ECM) / 삼천당제약(인슐린IND+세마글루타이드) / INTC — CIO 6주 누적 미이행 종목 watchlist 정리
+
+## [2026-06-28T08:05] CIO_SESSION 주간 Exit Review 2026-06-28 — FLAG_RESOLVED 0건, FLAG_REVIEW 1건(씨엠티엑스 RS DB 7주+ 미수록), HOLD 9건 → reviews/2026-06-28_주간ExitReview_CIO.md
