@@ -45,3 +45,5 @@ ACTION 목록:
 ## [2026-06-17T17:29] RESOLVED 한스바이오메드·파마리서치(스킨부스터ECM) / 삼천당제약(인슐린IND+세마글루타이드) / INTC — CIO 6주 누적 미이행 종목 watchlist 정리
 
 ## [2026-06-28T08:05] CIO_SESSION 주간 Exit Review 2026-06-28 — FLAG_RESOLVED 0건, FLAG_REVIEW 1건(씨엠티엑스 RS DB 7주+ 미수록), HOLD 9건 → reviews/2026-06-28_주간ExitReview_CIO.md
+
+## [2026-07-05T09:00] CIO_SESSION 주간 Exit Review 2026-07-05 — FLAG_RESOLVED 0건, FLAG_REVIEW 1건(씨엠티엑스 8주+), HOLD 9건. 삼성전자 Q2 실적 발표 촉매 도래. 가온전선 RS 99.8% 급등. → reviews/2026-07-05_watchlist_CIO-exit-review.md
