@@ -44,7 +44,7 @@ status: monitoring
 26/04/20 S2 +1.9% RS94% 외인+750억 OK
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-09 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-10 -->
 
 ### cahier_de_market (2건)
 - 2026-07-05 [DISK 특징](40_consensus/raw/cahier_de_market/2026/07/05/035808_10012_DISK_특징____종합메모리보다_퓨어_낸드를_선호___마이크론보다_SK.md)

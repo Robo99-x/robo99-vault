@@ -46,7 +46,7 @@ status: monitoring
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-09 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-10 -->
 
 ### meritz_tech (11건)
 - 2026-07-07 [(메리츠증권 전기전자/IT부품 양승수)](40_consensus/raw/meritz_tech/2026/07/07/170059_17535_메리츠증권_전기전자_IT부품_양승수___LG전자_066570____로보.md)
