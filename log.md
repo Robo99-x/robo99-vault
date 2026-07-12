@@ -47,3 +47,4 @@ ACTION 목록:
 ## [2026-06-28T08:05] CIO_SESSION 주간 Exit Review 2026-06-28 — FLAG_RESOLVED 0건, FLAG_REVIEW 1건(씨엠티엑스 RS DB 7주+ 미수록), HOLD 9건 → reviews/2026-06-28_주간ExitReview_CIO.md
 
 ## [2026-07-05T09:00] CIO_SESSION 주간 Exit Review 2026-07-05 — FLAG_RESOLVED 0건, FLAG_REVIEW 1건(씨엠티엑스 8주+), HOLD 9건. 삼성전자 Q2 실적 발표 촉매 도래. 가온전선 RS 99.8% 급등. → reviews/2026-07-05_watchlist_CIO-exit-review.md
+## [2026-07-12T08:04] CIO_SESSION 주간 Exit Review — FLAG_REVIEW x5(LS전선/DL이앤씨/효성티앤씨/현대로템/두산에너빌리티), HOLD x7그룹, FLAG_RESOLVED x0 → reviews/2026-07-12_weekly-exit-review_CIO.md
