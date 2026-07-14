@@ -35,7 +35,7 @@ status: watchlist
 <!-- [[themes/테마명]] -->
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-13 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-14 -->
 
 ### cahier_de_market (2건)
 - 2026-06-05 [메모리: SemiAnalysis, “Rubin NVL72 랙당 DRAM 용량 ~50% 축소로 시스템 비용 하](40_consensus/raw/cahier_de_market/2026/06/05/081002_9711_메모리__SemiAnalysis___Rubin_NVL72_랙당_DRAM.md)

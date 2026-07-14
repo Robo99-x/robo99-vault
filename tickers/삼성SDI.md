@@ -44,7 +44,7 @@ status: monitoring
 26/04/20 S2 +1.8% RS89% 외인+1550억 OK
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-13 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-14 -->
 
 ### meritz_tech (25건)
 - 2026-07-13 [Meritz Overnight Tech 2026. 7. 13 (월)](40_consensus/raw/meritz_tech/2026/07/13/164730_17646_Meritz_Overnight_Tech_2026__7__13__월.md)
