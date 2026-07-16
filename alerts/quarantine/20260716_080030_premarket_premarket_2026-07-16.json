@@ -1,0 +1,7 @@
+{
+  "task_name": "premarket",
+  "run_id": "premarket_2026-07-16",
+  "error": "렌더링 실패: cannot use 'dict' as a dict key (unhashable type: 'dict')",
+  "raw_output": "{\n  \"briefing_date\": \"2026-07-16\",\n  \"macro_context\": \"컴파일 기준(08:00 KST) overnight 신규 매크로 데이터 미수집 — ZERO_PARSE(theme_screener.json 0건) · UNRESOLVED_ALIAS(SPCX) 전일 대비 미해소. 활성 이벤트 13건(무라타 MLCC 가격인상·FCC 광섬유 규제 폐지·EU 원자력 액션플랜 등) 유지 중이나 overnight 신규 트리거 없음.\",\n  \"items\": [],\n  \"unchanged_tickers\": [\n    {\"ticker_code\": \"009150\", \"ticker_name\": \"삼성전기\"},\n    {\"ticker_code\": \"001820\", \"ticker_name\": \"삼화콘덴서\"},\n    {\"ticker_code\": \"LITE\", \"ticker_name\": \"LITE\"},\n    {\"ticker_code\": \"NVDA\", \"ticker_name\": \"NVDA\"},\n    {\"ticker_code\": \"060870\", \"ticker_name\": \"씨엠티엑스\"},\n    {\"ticker_code\": \"229640\", \"ticker_name\": \"LS전선\"},\n    {\"ticker_code\": \"000500\", \"ticker_name\": \"가온전선\"},\n    {\"ticker_code\": \"GLW\", \"ticker_name\": \"GLW\"},\n    {\"ticker_code\": \"005930\", \"ticker_name\": \"삼성전자\"}\n  ],\n  \"screener_top5\": [],\n  \"screener_date\": \"2026-07-16\"\n}",
+  "quarantined_at": "2026-07-16T08:00:30.048047"
+}
