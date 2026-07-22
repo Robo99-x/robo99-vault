@@ -44,9 +44,10 @@ status: monitoring
 26/04/20 S1 +5.5% RS85% 외인-215억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-21 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-22 -->
 
 ### meritz_tech (30건)
+- 2026-07-22 [Meritz Overnight Tech 2026. 7. 22 (수)](40_consensus/raw/meritz_tech/2026/07/22/165029_17748_Meritz_Overnight_Tech_2026__7__22__수.md)
 - 2026-07-21 [Meritz Overnight Tech 2026. 7. 21 (화)](40_consensus/raw/meritz_tech/2026/07/21/165840_17717_Meritz_Overnight_Tech_2026__7__21__화.md)
 - 2026-07-20 [Meritz Overnight Tech 2026. 7. 20 (월)](40_consensus/raw/meritz_tech/2026/07/20/164120_17706_Meritz_Overnight_Tech_2026__7__20__월.md)
 - 2026-07-16 [Meritz Overnight Tech 2026. 7. 16 (목)](40_consensus/raw/meritz_tech/2026/07/16/170026_17697_Meritz_Overnight_Tech_2026__7__16__목.md)
@@ -76,4 +77,3 @@ status: monitoring
 - 2026-05-28 [Meritz Overnight Tech 2026. 5. 28 (목)](40_consensus/raw/meritz_tech/2026/05/28/165716_17056_Meritz_Overnight_Tech_2026__5__28__목.md)
 - 2026-05-27 [Meritz Overnight Tech 2026. 5. 27 (수)](40_consensus/raw/meritz_tech/2026/05/27/163828_17045_Meritz_Overnight_Tech_2026__5__27__수.md)
 - 2026-05-26 [Meritz Overnight Tech 2026. 5. 26 (화)](40_consensus/raw/meritz_tech/2026/05/26/165433_17033_Meritz_Overnight_Tech_2026__5__26__화.md)
-- 2026-05-22 [Meritz Overnight Tech 2026. 5. 22 (금)](40_consensus/raw/meritz_tech/2026/05/22/164118_17019_Meritz_Overnight_Tech_2026__5__22__금.md)
