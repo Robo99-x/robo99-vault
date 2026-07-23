@@ -46,7 +46,7 @@ status: monitoring
 26/04/20 S2 +1.0% RS81% 외인-324억 주의
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-22 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-07-23 -->
 
 ### meritz_tech (12건)
 - 2026-07-15 [(메리츠증권 반도체/디스플레이 김선우)](40_consensus/raw/meritz_tech/2026/07/15/230610_17695_메리츠증권_반도체_디스플레이_김선우___주요_IT_기업_2Q26_실적발.md)

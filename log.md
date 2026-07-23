@@ -50,3 +50,4 @@ ACTION 목록:
 ## [2026-07-12T08:04] CIO_SESSION 주간 Exit Review — FLAG_REVIEW x5(LS전선/DL이앤씨/효성티앤씨/현대로템/두산에너빌리티), HOLD x7그룹, FLAG_RESOLVED x0 → reviews/2026-07-12_weekly-exit-review_CIO.md
 
 ## [2026-07-19T08:04] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: GLW×1 / FLAG_REVIEW: LS전선·씨엠티엑스·SPCX×3 / HOLD: 6종목 → reviews/2026-07-19_WEEKLY_EXIT_REVIEW_CIO.md
+## [2026-07-23T17:23] INGEST SKT(017670) 에스케이하이퍼 설립 공시 → 00_inbox/2026/07/23/2026-07-23-172312-telegram-raw.md
