@@ -51,3 +51,4 @@ ACTION 목록:
 
 ## [2026-07-19T08:04] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED: GLW×1 / FLAG_REVIEW: LS전선·씨엠티엑스·SPCX×3 / HOLD: 6종목 → reviews/2026-07-19_WEEKLY_EXIT_REVIEW_CIO.md
 ## [2026-07-23T17:23] INGEST SKT(017670) 에스케이하이퍼 설립 공시 → 00_inbox/2026/07/23/2026-07-23-172312-telegram-raw.md
+## [2026-07-24T09:48] CIO_SESSION MU/메모리 섹터 — Shawn Kim bearish take 분석 → reviews/2026-07-24_MU_optimus-geek.md
