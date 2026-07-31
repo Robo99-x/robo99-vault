@@ -1,0 +1,53 @@
+---
+source: telegram
+channel: meritz_tech
+message_id: 17898
+date: 2026-07-31
+datetime: 2026-07-31T17:00:54 KST
+sender: merITz_tech
+processed: false
+---
+
+Meritz Overnight Tech 2026. 7. 31 (금)
+
+[메리츠증권 반도체/디스플레이 김선우]
+
+★ 메모리 스팟가격
+ DRAM(DDR4 8Gb: 1D +0.30%, 1W +1.45%, 1M +12.96%)
+         (DDR5 16Gb: 1D +0.07%, 1W +0.92%, 1M +8.83%)
+ NAND(MLC 64Gb: 1D 0.00%, 1W +3.74%, 1M +12.03%)
+
+★ 반도체/디스플레이 주요 뉴스 플로우
+CY2Q26 Amazon 실적발표. AWS 매출 422억달러(+36.7%) 기록하며 시장 예상치인 405억달러를 상회. AI 사업과 AI 칩 사업은 각각 연간 환산 기준(Annualized) 매출 250억달러를 돌파하며 전년 대비 두 배 이상 성장. 2026년 예상 Capex는 2,200억달러로 제시하며 기존 예상치인 2,000억달러에서 상향 조정. 이는 메모리 비용 상승에서 기인 (CNBC)
+*Amazon CEO Says Co. Has Strong Visibility Into Demand For Servers, Networking Equipment Before Spending; Higher Memory Costs Pushed Up 2026 CAPEX Estimate
+https://buly.kr/Aln3PIa
+
+“중국산 메모리 쓰지 말라”…美여야 의원들, 애플에 경고 (조선일보)
+...애플 CEO 부품 조달 총력전 언급 (Apple CEO Says Co. Is 'Evaulating All Options' For Alternative Suppliers Of Components)
+https://buly.kr/1y1AMKJ
+
+LH 호남권 반도체 국가산단 조사설계용역 발주, 이성훈 "최단기간 추진 목표" (Business Post)
+https://buly.kr/3jAkAWE
+
+최태원 회장, SK하이닉스 지분 3620주 매수…기업가치 제고 의지 (지디넷코리아)
+https://buly.kr/3NLEBy8
+
+Nexus Data Centers, 150억달러 확보 임박… 앤트로픽 AI 인프라(Google-backed) 구축 지원 (CNBC)
+https://buly.kr/1GM8RAc
+
+TSMC, 1.4나노 공장 건설 예정보다 앞당겨져… 2028년 중반 양산 목표 (TrendForce)
+https://buly.kr/EzlEwj7
+
+DB하이텍 파운드리 증설 '비상'…수공 "물 공급 어려워" (TheElec)
+https://buly.kr/7QOeldM
+
+LG디스플레이, '국민성장펀드' 지원 기업 최종 선정…3조원 규모 투자 속도 (지디넷코리아)
+https://buly.kr/8piic8a
+
+★ 전일 해외 관련업체 주요 주가등락 (2%p 이상)
+SK하이닉스(-5.6%), Micron(+18.4%), Western Digital(+15.4%), Nanya(-7.2%), HPQ(-5.5%), Lenovo(-5.4%), Asus(-3.2%), ZTE(-2.3%), Intel(+11.3%), Qualcomm(-2.6%), TI(+2.7%), Nvidia(+2.6%), STMicro(+6.3%), Marvell(+12.2%), AMD(+13%), Mediatek(+2.7%), DB하이텍(-4.9%), Magnachip(+5.6%), UMC(+7.3%), SMIC(-7.7%), BOE(-6.1%), AUO(-6.1%), 원익 IPS(-8.3%), 테스(-12.5%), ASML(+5.7%), AMAT(+15%), KLA(+6%), LAM Research(+18%), Tokyo Electron(+4.5%), 원익머트리얼즈(-2.6%), 솔브레인(-3.9%), Air Product(+2%), 덕산네오룩스(+3.5%), 삼성전기(-14.6%), Murata(+3%), Yageo(-10%), LG에너지솔루션(+6.5%), Panasonic(+2.2%)
+
+(자료: Bloomberg, DRAMeXchange, 언론자료) 
+
+
+*동 자료는 Compliance 규정을 준수하여 사전 공표된 자료이며, 고객의 증권투자결과에 대한 법적 책임소재의 증빙자료로 사용될 수 없습니다.

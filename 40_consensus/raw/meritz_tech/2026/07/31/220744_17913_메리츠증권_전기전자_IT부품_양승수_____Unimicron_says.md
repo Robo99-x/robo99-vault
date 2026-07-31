@@ -1,0 +1,41 @@
+---
+source: telegram
+channel: meritz_tech
+message_id: 17913
+date: 2026-07-31
+datetime: 2026-07-31T22:07:44 KST
+sender: merITz_tech
+processed: false
+---
+
+[메리츠증권 전기전자/IT부품 양승수]
+
+▶ Unimicron says Intel's EMIB-T will not reach mass production until 2027, sharpening advanced packaging rivalry
+
+- Unimicron은 TSMC CoWoS 캐파가 여전히 타이트한 가운데, Intel EMIB-T 첨단 패키징 플랫폼의 본격 양산은 2027년에야 가능할 것으로 언급
+
+- 고객 피드백에 따르면 CoWoS에서 EMIB-T로 전환을 검토하는 고객의 주요 동기는 낮은 비용과 성능 개선
+
+- Unimicron은 해당 고객들이 EMIB-T를 3개 제품 세대 동안 유지할 것으로 예상, CoWoS 외 장기 대안에 대한 시장 수요를 시사
+
+- CoWoS와 EMIB-T의 핵심 차이는 고가 인터포저 사용 여부로, 이에 따라 가격 격차가 40~50%까지 벌어질 수 있음
+
+- EMIB-T는 비용 민감도가 높은 ASIC 및 CPU AI 칩 고객에게 특히 매력적인 옵션으로 평가
+
+- Unimicron은 EMIB-T를 특정 고객 전용 기술이 아니라, CoWoS와 함께 고객·제품별 수요에 대응하는 첨단 패키징 포트폴리오의 일부로 보고 있음
+
+- EMIB-T 관련 투자는 전체 투자액의 10% 미만이며, 해당 플랫폼 전용 장비는 그중 15~20% 수준. 나머지는 고객 수요 변화에 따라 재배치 가능한 범용 장비
+
+- EMIB-T는 아직 초기 단계 플랫폼으로, 현재 핵심 과제는 빠른 램프업과 수율 개선
+
+- 고객사는 램프업 기간 일부 이익 보호 장치를 제공하고 있으며, 수율 개선 시 공급사의 수익 안정성, 매출, 장비 회전율 개선 가능
+
+- 현재 EMIB-T 기판 공급사는 Unimicron, Ibiden, Shinko Electric Industries 3개사이며, 모두 초기 수율 50%를 목표로 하고 있음
+
+- 고객사는 주요 EMIB-T 공정 장비 일부를 중앙 배정하고 있으며, 각 공급사의 캐파 구축과 수율 개선 상황에 따라 설치 일정을 조정
+
+- 원칙적으로 3개 공급사가 장비를 1/3씩 배정받는 구조로, 전체 장비 수량은 유지하되 납품 시점만 조정해 생산 효율을 높이는 방식
+
+https://buly.kr/FsL1vvC (Digitimes Asia)
+
+*본 내용은 당사의 코멘트 없이 국내외 언론사 뉴스 및 전자공시자료 등을 인용한 것으로 별도의 승인 절차 없이 제공합니다.
