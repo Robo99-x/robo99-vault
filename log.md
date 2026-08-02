@@ -54,3 +54,4 @@ ACTION 목록:
 ## [2026-07-24T09:48] CIO_SESSION MU/메모리 섹터 — Shawn Kim bearish take 분석 → reviews/2026-07-24_MU_optimus-geek.md
 
 ## [2026-07-26T08:03] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW), FLAG_REVIEW×4(씨엠티엑스·LS전선·삼성전자·SPCX), HOLD×5 → reviews/2026-07-26_WEEKLY_EXIT_REVIEW_CIO.md
+## [2026-08-02T08:04] CIO_SESSION 주간 Exit Review — ACTIVE 7건. FLAG_REVIEW: LITE/NVDA, 씨엠티엑스, LS전선/가온전선/GLW, SPCX. HOLD: 삼성전기, 삼화콘덴서, 삼성전자. FLAG_RESOLVED: 없음. → reviews/2026-08-02_WEEKLY-EXIT-REVIEW_CIO.md
