@@ -57,3 +57,5 @@ ACTION 목록:
 ## [2026-08-02T08:04] CIO_SESSION 주간 Exit Review — ACTIVE 7건. FLAG_REVIEW: LITE/NVDA, 씨엠티엑스, LS전선/가온전선/GLW, SPCX. HOLD: 삼성전기, 삼화콘덴서, 삼성전자. FLAG_RESOLVED: 없음. → reviews/2026-08-02_WEEKLY-EXIT-REVIEW_CIO.md
 
 ## [2026-08-09T09:00 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 무효화 조건 3주+ 유지, watchlist 미반영) / FLAG_REVIEW×5(LS전선·씨엠티엑스[11주+]·삼성전자·LITE/NVDA·SPCX) / HOLD×3(삼성전기·삼화콘덴서·가온전선) → reviews/2026-08-09_WEEKLY-EXIT-REVIEW_CIO.md
+
+## [2026-08-16T08:03 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 무효화 조건 4주+ 유지, watchlist 미반영) / FLAG_REVIEW×5(LS전선·씨엠티엑스[12주+]·삼성전자·LITE/NVDA·SPCX) / HOLD×3(삼성전기·삼화콘덴서·가온전선) → reviews/2026-08-16_WEEKLY-EXIT-REVIEW_CIO.md
