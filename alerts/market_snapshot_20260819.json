@@ -1,0 +1,158 @@
+{
+  "timestamp": "2026-08-19T07:02:01.204542",
+  "date": "2026-08-19",
+  "indices": {
+    "S&P 500": {
+      "symbol": "^GSPC",
+      "price": 7691.76,
+      "change_pct": -0.69
+    },
+    "나스닥": {
+      "symbol": "^IXIC",
+      "price": 26289.71,
+      "change_pct": -1.33
+    },
+    "다우": {
+      "symbol": "^DJI",
+      "price": 53343.4,
+      "change_pct": -0.22
+    },
+    "VIX": {
+      "symbol": "^VIX",
+      "price": 15.84,
+      "change_pct": 4.28
+    }
+  },
+  "macro": {
+    "10Y": {
+      "symbol": "^TNX",
+      "price": 4.71,
+      "change_pct": -0.38
+    },
+    "DXY": {
+      "symbol": "DX-Y.NYB",
+      "price": 99.65,
+      "change_pct": 0.02
+    },
+    "WTI": {
+      "symbol": "CL=F",
+      "price": 84.42,
+      "change_pct": -0.09
+    },
+    "USD/KRW": {
+      "symbol": "KRW=X",
+      "price": 1412.29,
+      "change_pct": -0.22
+    },
+    "USD/JPY": {
+      "symbol": "JPY=X",
+      "price": 159.59,
+      "change_pct": 0.23
+    },
+    "금": {
+      "symbol": "GC=F",
+      "price": 4389.5,
+      "change_pct": -0.64
+    }
+  },
+  "sectors": {
+    "XLK": {
+      "symbol": "XLK",
+      "price": 185.62,
+      "change_pct": -2.47
+    },
+    "XLF": {
+      "symbol": "XLF",
+      "price": 57.84,
+      "change_pct": 0.45
+    },
+    "XLE": {
+      "symbol": "XLE",
+      "price": 63.68,
+      "change_pct": 1.76
+    },
+    "XLV": {
+      "symbol": "XLV",
+      "price": 169.73,
+      "change_pct": 1.6
+    },
+    "XLI": {
+      "symbol": "XLI",
+      "price": 183.57,
+      "change_pct": -1.48
+    },
+    "XLRE": {
+      "symbol": "XLRE",
+      "price": 44.63,
+      "change_pct": -0.45
+    },
+    "XLP": {
+      "symbol": "XLP",
+      "price": 85.58,
+      "change_pct": 1.06
+    },
+    "XLC": {
+      "symbol": "XLC",
+      "price": 110.48,
+      "change_pct": -0.31
+    }
+  },
+  "watchlist": {
+    "NVDA": {
+      "symbol": "NVDA",
+      "price": 219.74,
+      "change_pct": -2.34
+    },
+    "AAPL": {
+      "symbol": "AAPL",
+      "price": 310.03,
+      "change_pct": 1.45
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "price": 481.63,
+      "change_pct": 0.27
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "price": 344.2,
+      "change_pct": 0.06
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "price": 259.45,
+      "change_pct": -0.71
+    },
+    "META": {
+      "symbol": "META",
+      "price": 543.67,
+      "change_pct": -4.45
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "price": 336.87,
+      "change_pct": -0.72
+    },
+    "TSM": {
+      "symbol": "TSM",
+      "price": 413.41,
+      "change_pct": -4.07
+    },
+    "AVGO": {
+      "symbol": "AVGO",
+      "price": 380.0,
+      "change_pct": -3.17
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "price": 484.39,
+      "change_pct": -4.27
+    }
+  },
+  "earnings": [],
+  "_meta": {
+    "total_symbols": 28,
+    "success": 28,
+    "failed": 0
+  }
+}
