@@ -44,7 +44,7 @@ status: monitoring
 26/04/20 S2 +1.9% RS94% 외인+750억 OK
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-08-20 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-08-21 -->
 
 ### cahier_de_market (3건)
 - 2026-07-27 [(메리츠증권 반도체/디스플레이 김선우)](40_consensus/raw/cahier_de_market/2026/07/27/174950_10227_메리츠증권_반도체_디스플레이_김선우_____메리츠_인뎁스_보고서__지능.md)
