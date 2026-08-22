@@ -35,7 +35,7 @@ status: watchlist
 <!-- [[themes/테마명]] -->
 
 ## 채널 멘션
-<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-08-21 -->
+<!-- compile_channel_mentions.py 자동 생성. 수동 편집 금지 (덮어쓰기됨). last_compiled: 2026-08-22 -->
 
 ### cahier_de_market (3건)
 - 2026-08-05 [**일론 머스크, 스페이스X가 엔비디아( ****$NVDA****) 기반으로만 구축할 것**](40_consensus/raw/cahier_de_market/2026/08/05/145852_10361_일론_머스크__스페이스X가_엔비디아_______NVDA______기반.md)
