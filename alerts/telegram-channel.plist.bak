@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.robo99.telegram-channel</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/script</string>
+    <string>-q</string>
+    <string>/dev/null</string>
+    <string>/Users/robo99/.local/bin/claude</string>
+    <string>--dangerously-skip-permissions</string>
+    <string>--channels</string>
+    <string>plugin:telegram@claude-plugins-official</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/robo99</string>
+
+  <!-- 프로세스 종료 즉시 재시작 -->
+  <key>KeepAlive</key>
+  <true/>
+
+  <!-- 로그인 시 자동 시작 -->
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- 재시작 최소 간격 3초 (빠른 재연결) -->
+  <key>ThrottleInterval</key>
+  <integer>3</integer>
+
+  <key>StandardOutPath</key>
+  <string>/Users/robo99/robo99_hq/alerts/telegram_channel.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/robo99/robo99_hq/alerts/telegram_channel.err</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>/Users/robo99</string>
+    <key>PATH</key>
+    <string>/Users/robo99/.local/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>TERM</key>
+    <string>xterm-256color</string>
+  </dict>
+</dict>
+</plist>
