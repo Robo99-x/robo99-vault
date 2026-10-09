@@ -138,3 +138,4 @@
 전송 완료
 전송 완료
 전송 완료
+전송 실패: {"ok":false,"error_code":401,"description":"Unauthorized"}
