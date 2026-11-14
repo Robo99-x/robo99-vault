@@ -307,3 +307,4 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
 전송 실패: {"ok":false,"error_code":401,"description":"Unauthorized"}
 전송 실패: {"ok":false,"error_code":401,"description":"Unauthorized"}
 전송 실패: {"ok":false,"error_code":401,"description":"Unauthorized"}
+전송 실패: {"ok":false,"error_code":401,"description":"Unauthorized"}
