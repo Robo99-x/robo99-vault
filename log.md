@@ -82,3 +82,6 @@ ACTION 목록:
 ## [2026-11-01T09:00 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 13주 연속, watchlist 미반영) / FLAG_REVIEW×6(삼성전기·삼성전자·LS전선[RS 88→75 격상]·씨엠티엑스[22주+]·LITE/NVDA·SPCX) / HOLD×2(삼화콘덴서·가온전선). Telegram 전송 실패(MCP 미연결) → reviews/2026-11-01_WEEKLY-EXIT-REVIEW_CIO.md
 ## [2026-11-08T09:00 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 14주 연속, watchlist 미반영) / FLAG_REVIEW×6(삼성전기[RS 90.4→50.4]·삼성전자·LS전선[RS 75→36.8]·씨엠티엑스[23주+]·LITE/NVDA·SPCX) / HOLD×2(삼화콘덴서·가온전선). Telegram 전송 실패(MCP 연결 실패) → reviews/2026-11-08_WEEKLY-EXIT-REVIEW_CIO.md
 ## [2026-11-15T08:00] CIO_SESSION 주간 Exit Review → reviews/2026-11-15_WEEKLY-EXIT-REVIEW_CIO.md (Telegram 전송 실패)
+
+## [2026-11-22T09:00 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 16주 연속, watchlist 미반영) / FLAG_REVIEW×7(삼성전기[RS 15.8 하위20
+## [2026-11-22T09:00 KST] CIO_SESSION 주간 Exit Review — FLAG_RESOLVED×1(GLW, 16주 연속, watchlist 미반영) / FLAG_REVIEW×7(삼성전기[RS 15.8 하위20% 첫 진입]·삼화콘덴서[RS 92.8→41.8]·삼성전자·LS전선·씨엠티엑스[25주+]·LITE/NVDA·SPCX) / HOLD×1(가온전선). Telegram 전송 실패(MCP 연결 실패) → reviews/2026-11-22_WEEKLY-EXIT-REVIEW_CIO.md
